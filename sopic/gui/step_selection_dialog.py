@@ -34,8 +34,7 @@ class StepSelectionDialog(QDialog):
         self.layout.addWidget(QLabel('All steps'), 0, 0)
         self.layout.addWidget(checkbox, 0, 1)
 
-        # skip the first and last element (nfc)
-        for index, step in enumerate(self.steps[1:-1]):
+        for index, step in enumerate(self.steps):
             # keep index 0 for the 'All steps' checkbox
             index += 1
             checkbox = QCheckBox()

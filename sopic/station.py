@@ -8,6 +8,7 @@ STEP_SKIPPED = 'skipped'
 STEP_RETRY = 'retry'
 STEP_OK = 'ok'
 STEP_KO = 'ko'
+RUN_TERMINATED = 'terminated'
 
 # stepDef is the step from the step array defined in a station.py file.
 # It can, sometimes, be a tuple (step, boolean) to overwrite the ACTIVATED
@@ -244,16 +245,17 @@ class Station:
                 # When an errorCode is available, store it in the __errors array
                 if (stepResult["errorCode"] is not None):
                     self.stepsData["__errors"].append((step.STEP_NAME, stepResult["errorCode"], stepResult["errorStr"]))
-                self.endStepHandler(STEP_KO, step)
+
 
                 # The step is non blocking, and the station is not in a terminate run
                 if (self.isNonBlockingStep(step.STEP_NAME) and stepResult["terminate"] == False):
                     # The step has failed, but the station will start the next step
                     self.logger.debug("Non-Blocking step reached")
+                    self.endStepHandler(STEP_KO, step)
                 else:
                     # Blocking step, or terminate run, the station will go to the last step
                     self.logger.debug("Blocking step reached, go to last step")
-                    self.stepIndex = len(self.steps) - 1
+                    self.endStepHandler(RUN_TERMINATED, step)
 
         return isSuccessRun
 
@@ -273,6 +275,13 @@ class Station:
             time.sleep(1)
             # retry the same step
             self.stepIndex -= 1
+        elif (status == RUN_TERMINATED):
+            step.end()
+            # go to the last step, if we're not already on it
+            if (self.stepIndex != (len(self.steps) - 1)):
+                # XXX: the index will be incremented at the end of the function
+                # thats why we have a `len() - 2` instead of a `len() - 1`
+                self.stepIndex = len(self.steps) - 2
         else:
             step.end()
         self.stepIndex += 1
