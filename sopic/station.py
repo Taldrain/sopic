@@ -43,7 +43,7 @@ class Station:
     settings = None
 
     # path to logs file, if enabled
-    default_log_dir = "~/ftm-manufacturing-logs/"
+    default_log_dir = "~/.sopic/logs/"
 
     # should the log to file be enabled
     disable_file_logging = False
@@ -52,7 +52,7 @@ class Station:
     disable_handlers = False
 
     # path to settings file
-    default_settings_dir = "~/.feetme/"
+    default_settings_dir = "~/.sopic/settings/"
 
     # nextStepHandler: handler called when a new step start
     # clearStepsHandlerUI: handler called when starting a new run
@@ -261,6 +261,18 @@ class Station:
 
 
 
+    # handler of end step
+    #
+    # TODO we could simplify by merging some statements
+    # -> update ui (OK, KO, retry)
+    # -> update the step (step.end())
+    # -> update the index
+    #   - we could also rework how the index is dealt, we could replace the
+    #     `while` loop with a `for` loop and prevent any manual update of the
+    #     index. This would be clearer and force use to go through all steps.
+    #     We would just have to track a "terminated" run to skip the step.
+    #     Having a end run step would also be cleaner, insted of having to run
+    #     the last step, even in terminated run.
     def endStepHandler(self, status, step):
         if (status == STEP_SKIPPED):
             self.skipStepHandlerUI()
@@ -276,6 +288,7 @@ class Station:
             # retry the same step
             self.stepIndex -= 1
         elif (status == RUN_TERMINATED):
+            self.stepKOHandlerUI()
             step.end()
             # go to the last step, if we're not already on it
             if (self.stepIndex != (len(self.steps) - 1)):
