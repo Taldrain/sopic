@@ -10,7 +10,7 @@ from examples.steps import Select, AlwaysOK
 
 
 class DisabledStepStation(Station):
-    DISPLAY_NAME = 'a station with step disabled by default'
+    DISPLAY_NAME = 'station with step disabled by default'
     STATION_NAME = 'disabled-step-station'
     STATION_ID = 2
 

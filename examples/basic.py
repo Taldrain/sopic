@@ -9,7 +9,7 @@ from sopic.gui import MainWindow
 from examples.steps import Select, AlwaysOK, AlwaysKO
 
 class BasicStation(Station):
-    DISPLAY_NAME = 'a basic station'
+    DISPLAY_NAME = 'basic station'
     STATION_NAME = 'basic-station'
     STATION_ID = 0
 

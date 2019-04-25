@@ -9,9 +9,9 @@ from sopic.gui import MainWindow, MainSettingsDialog
 from examples.steps import Select, PrintSettings
 
 class SettingsStation(Station):
-    DISPLAY_NAME = 'a station with step disabled by default'
-    STATION_NAME = 'disabled-step-station'
-    STATION_ID = 2
+    DISPLAY_NAME = 'station with settings'
+    STATION_NAME = 'settings-station'
+    STATION_ID = 3
 
     disable_file_logging = True
 

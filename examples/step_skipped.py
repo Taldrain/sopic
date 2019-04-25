@@ -8,28 +8,35 @@ from sopic.gui import MainWindow
 
 from examples.steps import Select, AlwaysOK
 
+print("==> ", Select.STEP_NAME)
 
-class BlockingStepStation(Station):
-    DISPLAY_NAME = 'station with blocking step'
-    STATION_NAME = 'blocking-step-station'
-    STATION_ID = 1
+class StepSkippedStation(Station):
+    DISPLAY_NAME = 'station with step skipped on fail'
+    STATION_NAME = 'step-skipped-station'
+
+    STATION_ID = 4
 
     disable_file_logging = True
 
     steps = [
-        # whatever the output (KO or OK) the next step will always be called
         Select,
+        Select,
+        # If one of the previous steps has failed, the step will be skipped,
+        # even if the previous steps is not blocking
         AlwaysOK,
         Select,
     ]
 
-    # all steps in the array returning KO will not block the run
     nonBlockingSteps = [
         Select.STEP_NAME,
     ]
 
+    stepsSkippedOnPreviousFail = [
+        AlwaysOK.STEP_NAME,
+    ]
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    mainwindow = MainWindow(BlockingStepStation)
+    mainwindow = MainWindow(StepSkippedStation)
     mainwindow.show()
     sys.exit(app.exec_())
