@@ -23,13 +23,13 @@ def initStep(stepDef, stationName, stationId, logger):
 # Station class
 #
 class Station:
-    # list of steps that will not steps the current run
+    # list of steps name that will not steps the current run
     # by default a failure end the run
-    nonBlockingSteps = [""]
+    nonBlockingSteps = []
 
-    # list of steps that should be skip if a previous step (a non blocking
+    # list of steps name that should be skip if a previous step (a non blocking
     # step) has failed
-    stepsSkippedOnPreviousFail = [""]
+    stepsSkippedOnPreviousFail = []
 
     # Id of the previous station, checked at the start of the run
     # None to disable the check
