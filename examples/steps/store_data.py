@@ -12,6 +12,8 @@ class StoreData(Step):
 
         randomValue = randint(0, 9)
         self.logger.info("Storing random value: {}".format(randomValue))
+
+        # Note that 'self.stepData' is different from 'stepsData'
         self.stepData[self.EXPORTED_KEY] = randomValue
 
         return self.OK()

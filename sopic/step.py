@@ -6,6 +6,7 @@ from .gui import StepUI
 class Step:
     widget = None
     stepData = {}
+    # Useful for flaky tests
     MAX_RETRIES = 0
     ACTIVATED = True
 

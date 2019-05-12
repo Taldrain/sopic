@@ -269,10 +269,10 @@ class Station:
     # -> update the index
     #   - we could also rework how the index is dealt, we could replace the
     #     `while` loop with a `for` loop and prevent any manual update of the
-    #     index. This would be clearer and force use to go through all steps.
+    #     index.
     #     We would just have to track a "terminated" run to skip the step.
-    #     Having a end run step would also be cleaner, insted of having to run
-    #     the last step, even in terminated run.
+    #     Having a dedicated end run step would also be cleaner, insted of
+    #     having to run the last step, even in terminated run.
     def endStepHandler(self, status, step):
         if (status == STEP_SKIPPED):
             self.skipStepHandlerUI()
