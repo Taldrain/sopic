@@ -8,7 +8,7 @@ from sopic.gui import MainWindow
 
 from examples.steps import StoreData, RetrieveData, Select
 
-class StepDataStatio(Station):
+class StepDataStation(Station):
     DISPLAY_NAME = 'step data station'
     STATION_NAME = 'step-data-station'
     STATION_ID = 6
@@ -23,6 +23,6 @@ class StepDataStatio(Station):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    mainwindow = MainWindow(StepDataStatio)
+    mainwindow = MainWindow(StepDataStation)
     mainwindow.show()
     sys.exit(app.exec_())
