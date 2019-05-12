@@ -8,8 +8,6 @@ from sopic.gui import MainWindow
 
 from examples.steps import Select, AlwaysOK
 
-print("==> ", Select.STEP_NAME)
-
 class StepSkippedStation(Station):
     DISPLAY_NAME = 'station with step skipped on fail'
     STATION_NAME = 'step-skipped-station'
