@@ -8,7 +8,9 @@ Define a station that will run a number of steps, in sequential order.
 
 # Screenshots
 
-// TODO
+![](assets/basic.png)
+![](assets/basic-run.png)
+![](assets/settings.png)
 
 
 # Installation
@@ -180,8 +182,10 @@ _unordered_
 - [ ] cleaner step definition (nonblocking/skipped/clean or ending step)
 - [ ] rework the main station loop, we should use a for-loop and not having to manually update the stepIndex
 - [ ] feature to freeze the settings and steps
+- [ ] publish package
 
 # See also
 
 [exclave](https://github.com/exclave/exclave)
+
 [Exclave: Hardware Testing in Mass Production, Made Easier](https://www.bunniestudios.com/blog/?p=5450)
