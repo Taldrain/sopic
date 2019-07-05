@@ -12,7 +12,7 @@ def getDefaultFormatter():
 def getColorFormatter():
     return colorlog.ColoredFormatter('%(log_color)s' + FORMAT)
 
-def getLogger(name, id, disable_file_logging, default_dir, disable_handlers):
+def getLogger(name, id, disable_file_logging, default_dir, other_handlers, disable_handlers):
     logger = logging.getLogger(name + '[' + str(id) + ']')
     logger.setLevel(DEFAULT_LEVEL)
 
@@ -42,5 +42,8 @@ def getLogger(name, id, disable_file_logging, default_dir, disable_handlers):
     logger.addHandler(consoleHandler)
     if (disable_file_logging is False):
         logger.addHandler(fileHandler)
+
+    for handler in other_handlers:
+        logger.addHandler(handler)
 
     return logger

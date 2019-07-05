@@ -51,6 +51,10 @@ class Station:
     # disable all logger handlers
     disable_log_handlers = False
 
+    # allow to add other handlers
+    log_handlers = []
+
+
     # path to settings file
     default_settings_dir = "~/.sopic/settings/"
 
@@ -71,6 +75,7 @@ class Station:
             self.STATION_ID,
             self.disable_file_logging,
             self.default_log_dir,
+            self.log_handlers,
             self.disable_log_handlers,
         )
         self.steps = list(map(lambda x: initStep(
