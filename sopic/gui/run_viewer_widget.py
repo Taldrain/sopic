@@ -2,7 +2,7 @@ from itertools import zip_longest
 
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
 
-from . import StatusElementWidget
+from . import StepStatusWidget
 
 # from https://docs.python.org/3/library/itertools.html#itertools-recipes
 def grouper(iterable, chunkSize, fillValue=None):
@@ -13,8 +13,8 @@ def grouper(iterable, chunkSize, fillValue=None):
 
 
 
-class StatusViewerWidget(QWidget):
-    # Number of StatusElementWidget per lines
+class RunViewerWidget(QWidget):
+    # Number of StepStatusWidget per lines
     LINE_CHUNK_SIZE = 10
 
     def __init__(self, station, parent=None):
@@ -27,7 +27,7 @@ class StatusViewerWidget(QWidget):
         self.init_widgets()
         vlayoutMain = QVBoxLayout()
 
-        for chunk in grouper(self.childs, self.LINE_CHUNK_SIZE, fillValue=StatusElementWidget('')):
+        for chunk in grouper(self.childs, self.LINE_CHUNK_SIZE, fillValue=StepStatusWidget('')):
             vlayoutMain.addLayout(self.new_hlayout(chunk))
 
         self.setLayout(vlayoutMain)
@@ -43,7 +43,7 @@ class StatusViewerWidget(QWidget):
         self.childs = []
 
         for step in self.station.getSteps():
-            self.childs.append(StatusElementWidget(step.getStepName()))
+            self.childs.append(StepStatusWidget(step.getStepName()))
 
         self.childs[0].in_progress()
 

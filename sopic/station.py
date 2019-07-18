@@ -68,7 +68,8 @@ class Station:
         clearStepsHandlerUI = None,
         stepOKHandlerUI = None,
         stepKOHandlerUI = None,
-        skipStepHandlerUI = None
+        skipStepHandlerUI = None,
+        endRunHandler = None
     ):
         self.logger = getLogger(
             self.STATION_NAME,
@@ -91,6 +92,7 @@ class Station:
         self.stepOKHandlerUI = stepOKHandlerUI
         self.stepKOHandlerUI = stepKOHandlerUI
         self.skipStepHandlerUI = skipStepHandlerUI
+        self.endRunHandler = endRunHandler
 
         self.settingsPath = os.path.join(
             os.path.expanduser(self.default_settings_dir),
@@ -182,6 +184,7 @@ class Station:
                 "nb_failed": (self.stepsData["__run"]["nb_failed"] + 1 if (not isSuccessRun) else self.stepsData["__run"]["nb_failed"]),
             })
             self.logger.info("Ending run ---------------------------------------")
+            self.endRunHandler(self.stepsData['__run'])
 
     # Start a run
     def run(self):

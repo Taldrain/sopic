@@ -13,9 +13,10 @@ import threading
 
 from . import LoggerWidget
 from . import TabManagerWidget
-from . import StatusViewerWidget
+from . import RunViewerWidget
 from . import SettingsViewerWidget
 from . import StepSelectionDialog
+from . import StationStatusWidget
 
 class MainWindow(QMainWindow):
     settings_dialog = None
@@ -27,7 +28,8 @@ class MainWindow(QMainWindow):
             clearStepsHandlerUI = self.clearStepsHandlerUI,
             stepOKHandlerUI = self.stepOKHandlerUI,
             stepKOHandlerUI = self.stepKOHandlerUI,
-            skipStepHandlerUI = self.skipStepHandlerUI
+            skipStepHandlerUI = self.skipStepHandlerUI,
+            endRunHandler = self.endRunHandler
         )
 
         if (settings_dialog is not None):
@@ -55,7 +57,8 @@ class MainWindow(QMainWindow):
         vlayoutMain = QVBoxLayout()
         hlayoutChild = QHBoxLayout()
 
-        vlayoutMain.addWidget(self.status_viewer_widget)
+        vlayoutMain.addWidget(self.run_viewer_widget)
+        vlayoutMain.addWidget(self.station_status_widget)
 
         self.splitter.addWidget(self.tab_manager_widget)
         self.splitter.addWidget(self.logger_widget)
@@ -78,7 +81,8 @@ class MainWindow(QMainWindow):
         self.station.logger.addHandler(self.logger_widget)
         self.splitter = QSplitter()
         self.tab_manager_widget = TabManagerWidget(self.station)
-        self.status_viewer_widget = StatusViewerWidget(self.station)
+        self.station_status_widget = StationStatusWidget()
+        self.run_viewer_widget = RunViewerWidget(self.station)
         if (self.settings_dialog is not None):
             self.settings_viewer_widget = SettingsViewerWidget(self.station)
             self.settings_dialog.accepted.connect(self.settings_viewer_widget.slot_update)
@@ -99,21 +103,24 @@ class MainWindow(QMainWindow):
 
     def nextStepHandlerUI(self):
         self.tab_manager_widget.update_current_tab()
-        self.status_viewer_widget.update_current_tab()
+        self.run_viewer_widget.update_current_tab()
 
     def skipStepHandlerUI(self):
-        self.status_viewer_widget.current_tab_skipped()
+        self.runviewer_widget.current_tab_skipped()
 
     def clearStepsHandlerUI(self):
-        self.status_viewer_widget.reset()
+        self.run_viewer_widget.reset()
         # we re-update the current tab, it was cleaned with the previous reset
-        self.status_viewer_widget.update_current_tab()
+        self.run_viewer_widget.update_current_tab()
 
     def stepOKHandlerUI(self):
-        self.status_viewer_widget.current_tab_ok()
+        self.run_viewer_widget.current_tab_ok()
 
     def stepKOHandlerUI(self):
-        self.status_viewer_widget.current_tab_ko()
+        self.run_viewer_widget.current_tab_ko()
+
+    def endRunHandler(self, runObj):
+        self.station_status_widget.update(runObj)
 
     def keyPressEvent(self, event):
         k = event.key()
