@@ -106,7 +106,7 @@ class MainWindow(QMainWindow):
         self.run_viewer_widget.update_current_tab()
 
     def skipStepHandlerUI(self):
-        self.runviewer_widget.current_tab_skipped()
+        self.run_viewer_widget.current_tab_skipped()
 
     def clearStepsHandlerUI(self):
         self.run_viewer_widget.reset()
