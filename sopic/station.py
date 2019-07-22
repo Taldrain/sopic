@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import datetime
 
 from .utils import getLogger
 
@@ -131,7 +132,11 @@ class Station:
                 },
                 "__settings": self.settings,
                 "__errors": [],
-                "__run": previousRunInfo,
+                "__run": {
+                    **previousRunInfo,
+                    **{
+                        "startDate": datetime.datetime.utcnow(),
+                    },
             },
         }
 
@@ -183,7 +188,6 @@ class Station:
                 "nb_run": (self.stepsData["__run"]["nb_run"] + 1),
                 "nb_failed": (self.stepsData["__run"]["nb_failed"] + 1 if (not isSuccessRun) else self.stepsData["__run"]["nb_failed"]),
             })
-            self.logger.info("Ending run ---------------------------------------")
             self.endRunHandler(self.stepsData['__run'])
 
     # Start a run
@@ -265,6 +269,10 @@ class Station:
                     self.logger.debug("Blocking step reached, go to last step")
                     self.endStepHandler(RUN_TERMINATED, step)
 
+        currentTime = datetime.datetime.utcnow()
+        self.logger.debug("Run took {}s".format((currentTime - self.stepsData["__run"]["startDate"]).seconds))
+        self.logger.info("Run ended with a {}".format("SUCCESS" if isSuccessRun else "FAIL"))
+        self.logger.info("Ending run ---------------------------------------")
         return isSuccessRun
 
 
