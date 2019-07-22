@@ -181,6 +181,9 @@ class Station:
         while True:
             self.stepIndex = 0
             self.clearStepsHandlerUI()
+
+            self.startRunHandler()
+
             isSuccessRun = self.run()
 
             self.endRunHandler(self.stepsData['__run'])
@@ -236,7 +239,7 @@ class Station:
             if (stepResult["passed"]):
                 # Save the stepData object
                 self.stepsData[step.STEP_NAME] = stepResult["stepData"]
-                self.endStepHandler(STEP_OK, step)
+                self.endStepHandler(STEP_OK, step, stepResult)
                 # Reset the number of retries
                 number_retries = 0
             else:
@@ -248,10 +251,10 @@ class Station:
 
                 # If the step has not reach its max number of retries,
                 # we will relaunch the same step on the next loop iteration
-                if (stepResult["max_retries"] != 0 and number_retries < stepResult["max_retries"]):
+                if (step.MAX_RETRIES != 0 and number_retries < step.MAX_RETRIES):
                     number_retries += 1
                     self.logger.info("Retrying step")
-                    self.endStepHandler(STEP_RETRY, step)
+                    self.endStepHandler(STEP_RETRY, step, stepResult)
                     continue
 
                 # The max number of retries is reached, or the step has no retry
@@ -263,22 +266,25 @@ class Station:
                 self.stepsData[step.STEP_NAME] = stepResult["stepData"]
                 # When an errorCode is available, store it in the __errors array
                 if (stepResult["errorCode"] is not None):
-                    self.stepsData["__errors"].append((step.STEP_NAME, stepResult["errorCode"], stepResult["errorStr"]))
+                    self.stepsData["__errors"].append((step.STEP_NAME, stepResult["errorCode"], stepResult["infoStr"]))
 
 
                 # The step is non blocking, and the station is not in a terminate run
                 if (self.isNonBlockingStep(step.STEP_NAME) and stepResult["terminate"] == False):
                     # The step has failed, but the station will start the next step
                     self.logger.debug("Non-Blocking step reached")
-                    self.endStepHandler(STEP_KO, step)
+                    self.endStepHandler(STEP_KO, step, stepResult)
                 else:
                     # Blocking step, or terminate run, the station will go to the last step
                     self.logger.debug("Blocking step reached, go to last step")
-                    self.endStepHandler(RUN_TERMINATED, step)
+                    self.endStepHandler(RUN_TERMINATED, step, stepResult)
 
         return isSuccessRun
 
 
+    # handler of the start run
+    def startRunHandler(self):
+        pass
 
     # handler of end step
     #
@@ -292,7 +298,7 @@ class Station:
     #     We would just have to track a "terminated" run to skip the step.
     #     Having a dedicated end run step would also be cleaner, insted of
     #     having to run the last step, even in terminated run.
-    def endStepHandler(self, status, step):
+    def endStepHandler(self, status, step, stepResult):
         if (status == STEP_SKIPPED):
             self.skipStepHandlerUI()
         elif (status == STEP_OK):

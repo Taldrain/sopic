@@ -32,13 +32,12 @@ class Step:
     def end(self):
         self.logger.debug("Ending step " + self.STEP_NAME)
 
-    def buildStepResult(self, passed, terminate = False, errorStr = None, errorCode = None):
+    def buildStepResult(self, passed, terminate = False, infoStr = None, errorCode = None):
         return {
             "passed": passed,
             "stepData": self.stepData,
-            "max_retries": self.MAX_RETRIES,
             "terminate": terminate,
-            "errorStr": errorStr,
+            "infoStr": infoStr,
             "errorCode": errorCode,
         }
 
@@ -49,7 +48,7 @@ class Step:
         if (len(successStr) > 0):
             logStr = logStr + " " + successStr
         self.logger.info(logStr)
-        return self.buildStepResult(True)
+        return self.buildStepResult(True, infoStr=successStr)
 
     # The step has failed
     # stepData store data to be available for next steps
@@ -61,7 +60,7 @@ class Step:
         if (len(errorStr) > 0):
             logStr = logStr + " " + errorStr
         self.logger.error(logStr)
-        return self.buildStepResult(False, terminate, errorStr, errorCode)
+        return self.buildStepResult(False, terminate=terminate, infoStr=errorStr, errorCode=errorCode)
 
     def getWidget(self):
         if (self.widget == None):
