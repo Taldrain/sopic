@@ -183,7 +183,7 @@ class Station:
 
             self.startRunHandler()
             isSuccessRun = self.run()
-            self.endRunHandler()
+            self.endRunHandler(isSuccessRun)
 
             self._initStepData({
                 "success": isSuccessRun,
@@ -317,7 +317,7 @@ class Station:
         self.stepIndex += 1
 
     # handler of the end run
-    def endRunHandler(self):
+    def endRunHandler(self, isSuccessRun):
         self.endRunHandlerUI(self.stepsData['__run'])
         currentTime = datetime.datetime.utcnow()
         self.logger.debug("Run took {}s".format((currentTime - self.stepsData["__run"]["startDate"]).seconds))
