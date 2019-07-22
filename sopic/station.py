@@ -182,6 +182,13 @@ class Station:
             self.stepIndex = 0
             self.clearStepsHandlerUI()
             isSuccessRun = self.run()
+
+            self.endRunHandler(self.stepsData['__run'])
+            currentTime = datetime.datetime.utcnow()
+            self.logger.debug("Run took {}s".format((currentTime - self.stepsData["__run"]["startDate"]).seconds))
+            self.logger.info("Run ended with a {}".format("SUCCESS" if isSuccessRun else "FAIL"))
+            self.logger.info("Ending run ---------------------------------------")
+
             self._initStepData({
                 "success": isSuccessRun,
                 "consecutive_failed": (
@@ -189,7 +196,6 @@ class Station:
                 "nb_run": (self.stepsData["__run"]["nb_run"] + 1),
                 "nb_failed": (self.stepsData["__run"]["nb_failed"] + 1 if (not isSuccessRun) else self.stepsData["__run"]["nb_failed"]),
             })
-            self.endRunHandler(self.stepsData['__run'])
 
     # Start a run
     def run(self):
@@ -270,10 +276,6 @@ class Station:
                     self.logger.debug("Blocking step reached, go to last step")
                     self.endStepHandler(RUN_TERMINATED, step)
 
-        currentTime = datetime.datetime.utcnow()
-        self.logger.debug("Run took {}s".format((currentTime - self.stepsData["__run"]["startDate"]).seconds))
-        self.logger.info("Run ended with a {}".format("SUCCESS" if isSuccessRun else "FAIL"))
-        self.logger.info("Ending run ---------------------------------------")
         return isSuccessRun
 
 

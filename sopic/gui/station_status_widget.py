@@ -31,17 +31,17 @@ class StationStatusWidget(QWidget):
         self.nbFailed = QLabel("Number of failed: " + self.formatDisplayStat(0, 0))
         self.consecutiveFailed = QLabel("Consecutive fails: 0")
         self.stepTimer = QLabel("Previous run: {}s (avg: {}s)".format(0, 0))
-        self.stationTime = QLabel("Date: {}".format(datetime.date.today.isoformat()))
+        self.stationTime = QLabel("Date: {}".format(datetime.date.today().isoformat()))
 
     def update(self, runObj):
         runFail = runObj['nb_failed']
         nbRun = runObj['nb_run']
         runPass = nbRun - runFail
-        timeSpent = (datetime.datetime.utc() - runObj['startDate']).seconds
+        timeSpent = (datetime.datetime.utcnow() - runObj['startDate']).seconds
         if (nbRun > 0):
             self.avgTime = (self.avgTime * (nbRun - 1) / nbRun) + timeSpent / nbRun
 
         self.nbPassed.setText("Number of passed: " + self.formatDisplayStat(runPass, nbRun))
         self.nbFailed.setText("Number of failed: " + self.formatDisplayStat(runFail, nbRun))
         self.consecutiveFailed.setText("Consecutive fails: " + str(runObj['consecutive_failed']))
-        self.stepTimer = QLabel("Previous run: {}s (avg: {}s)".format(timeSpent, self.avgTime))
+        self.stepTimer.setText("Previous run: {}s (avg: {:.1f}s)".format(timeSpent, self.avgTime))
