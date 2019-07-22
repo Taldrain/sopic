@@ -137,6 +137,7 @@ class Station:
                     **{
                         "startDate": datetime.datetime.utcnow(),
                     },
+                },
             },
         }
 
