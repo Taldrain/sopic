@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
             stepOKHandlerUI = self.stepOKHandlerUI,
             stepKOHandlerUI = self.stepKOHandlerUI,
             skipStepHandlerUI = self.skipStepHandlerUI,
-            endRunHandler = self.endRunHandler
+            endRunHandlerUI = self.endRunHandlerUI
         )
 
         if (settings_dialog is not None):
@@ -119,7 +119,7 @@ class MainWindow(QMainWindow):
     def stepKOHandlerUI(self):
         self.run_viewer_widget.current_tab_ko()
 
-    def endRunHandler(self, runObj):
+    def endRunHandlerUI(self, runObj):
         self.station_status_widget.update(runObj)
 
     def keyPressEvent(self, event):

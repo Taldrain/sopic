@@ -70,7 +70,7 @@ class Station:
         stepOKHandlerUI = None,
         stepKOHandlerUI = None,
         skipStepHandlerUI = None,
-        endRunHandler = None
+        endRunHandlerUI = None
     ):
         self.logger = getLogger(
             self.STATION_NAME,
@@ -93,7 +93,7 @@ class Station:
         self.stepOKHandlerUI = stepOKHandlerUI
         self.stepKOHandlerUI = stepKOHandlerUI
         self.skipStepHandlerUI = skipStepHandlerUI
-        self.endRunHandler = endRunHandler
+        self.endRunHandlerUI = endRunHandlerUI
 
         self.settingsPath = os.path.join(
             os.path.expanduser(self.default_settings_dir),
@@ -180,17 +180,10 @@ class Station:
     def start(self):
         while True:
             self.stepIndex = 0
-            self.clearStepsHandlerUI()
 
             self.startRunHandler()
-
             isSuccessRun = self.run()
-
-            self.endRunHandler(self.stepsData['__run'])
-            currentTime = datetime.datetime.utcnow()
-            self.logger.debug("Run took {}s".format((currentTime - self.stepsData["__run"]["startDate"]).seconds))
-            self.logger.info("Run ended with a {}".format("SUCCESS" if isSuccessRun else "FAIL"))
-            self.logger.info("Ending run ---------------------------------------")
+            self.endRunHandler()
 
             self._initStepData({
                 "success": isSuccessRun,
@@ -202,8 +195,6 @@ class Station:
 
     # Start a run
     def run(self):
-        self.logger.info("Starting run")
-
         number_retries = 0
 
         isSuccessRun = True
@@ -284,7 +275,8 @@ class Station:
 
     # handler of the start run
     def startRunHandler(self):
-        pass
+        self.clearStepsHandlerUI()
+        self.logger.info("Starting run")
 
     # handler of end step
     #
@@ -323,6 +315,14 @@ class Station:
         else:
             step.end()
         self.stepIndex += 1
+
+    # handler of the end run
+    def endRunHandler(self):
+        self.endRunHandlerUI(self.stepsData['__run'])
+        currentTime = datetime.datetime.utcnow()
+        self.logger.debug("Run took {}s".format((currentTime - self.stepsData["__run"]["startDate"]).seconds))
+        self.logger.info("Run ended with a {}".format("SUCCESS" if isSuccessRun else "FAIL"))
+        self.logger.info("Ending run ---------------------------------------")
 
     # Check if stepName is non blocking
     def isNonBlockingStep(self, stepName):
