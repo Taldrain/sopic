@@ -208,13 +208,13 @@ class Station:
             # Skip the step, it's been deactivated
             if (step.ACTIVATED == False):
                 self.logger.warning("Skipping step {} - the step has been deactivated".format(step.STEP_NAME))
-                self.endStepHandler(STEP_SKIPPED, step, dict())
+                self.endStepHandler(STEP_SKIPPED, step, {})
                 continue
 
             # Skip the step, a previous step has failed and this step is tagged as skip on fail
             if (step.STEP_NAME in self.stepsSkippedOnPreviousFail and not isSuccessRun ):
                 self.logger.error("Skipping step {} - a previous step has failed".format(step.STEP_NAME))
-                self.endStepHandler(STEP_SKIPPED, step, dict())
+                self.endStepHandler(STEP_SKIPPED, step, {})
                 continue
 
             try:
@@ -223,7 +223,7 @@ class Station:
             except Exception as e:
                 # Catch any non-catched exception with a default errorCode
                 # The run is also terminated
-                stepResult = step.buildStepResult(False, True, e, 255)
+                stepResult = step.buildStepResult(False, True, e, 255, {})
                 self.logger.error("Exception not catch in step {}: {}".format(step.STEP_NAME, e))
 
             # The step has passed
@@ -258,7 +258,6 @@ class Station:
                 # When an errorCode is available, store it in the __errors array
                 if (stepResult["errorCode"] is not None):
                     self.stepsData["__errors"].append((step.STEP_NAME, stepResult["errorCode"], stepResult["infoStr"]))
-
 
                 # The step is non blocking, and the station is not in a terminate run
                 if (self.isNonBlockingStep(step.STEP_NAME) and stepResult["terminate"] == False):
