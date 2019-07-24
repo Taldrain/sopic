@@ -208,13 +208,13 @@ class Station:
             # Skip the step, it's been deactivated
             if (step.ACTIVATED == False):
                 self.logger.warning("Skipping step {} - the step has been deactivated".format(step.STEP_NAME))
-                self.endStepHandler(STEP_SKIPPED, step, {})
+                self.endStepHandler(STEP_SKIPPED, step, None)
                 continue
 
             # Skip the step, a previous step has failed and this step is tagged as skip on fail
             if (step.STEP_NAME in self.stepsSkippedOnPreviousFail and not isSuccessRun ):
                 self.logger.error("Skipping step {} - a previous step has failed".format(step.STEP_NAME))
-                self.endStepHandler(STEP_SKIPPED, step, {})
+                self.endStepHandler(STEP_SKIPPED, step, None)
                 continue
 
             try:
