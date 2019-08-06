@@ -51,7 +51,7 @@ class Step:
         if (len(successStr) > 0):
             logStr = logStr + " " + successStr
         self.logger.info(logStr)
-        return self.buildStepResult(True, infoStr=successStr, resultObj = None)
+        return self.buildStepResult(True, infoStr=successStr, resultObj=resultObj)
 
     # The step has failed
     # stepData store data to be available for next steps
