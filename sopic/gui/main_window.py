@@ -17,10 +17,13 @@ from . import RunViewerWidget
 from . import SettingsViewerWidget
 from . import StepSelectionDialog
 from . import StationStatusWidget
+from . import PasswordDialog
 
 class MainWindow(QMainWindow):
     settings_dialog = None
     debugDisplay = False
+    password_dialog = None
+
     def __init__(self, station, settings_dialog=None):
         super().__init__()
         self.station = station(
@@ -43,6 +46,9 @@ class MainWindow(QMainWindow):
         self.step_selection_dialog = StepSelectionDialog(
                 self.station.steps
         )
+
+        if (station.admin_password is not None):
+            self.password_dialog = PasswordDialog(station.admin_password)
 
         self.init_gui()
 
@@ -122,24 +128,30 @@ class MainWindow(QMainWindow):
     def endRunHandlerUI(self, runObj):
         self.station_status_widget.update(runObj)
 
+    def passwordDialogWrapper(self, secondDialog):
+        showDialog = True
+        if (self.password_dialog):
+            showDialog = self.password_dialog.exec_() is 1
+        if (showDialog is True):
+            secondDialog.show()
+
     def keyPressEvent(self, event):
         k = event.key()
 
-        # Quit via Escape or Ctrl-C
-        if (k == Qt.Key_Escape) or (k == Qt.Key_Q and
-            (QApplication.keyboardModifiers() & Qt.ControlModifier)):
+        # Quit via Ctrl-Q
+        if (k == Qt.Key_Q and (QApplication.keyboardModifiers() & Qt.ControlModifier)):
             self.close()
 
-        # Settings via Ctrl-H
-        if ((QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_H)):
+        # Settings via Ctrl-P
+        if ((QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_P)):
             if (self.settings_dialog):
-                self.settings_dialog.show()
+                self.passwordDialogWrapper(self.settings_dialog)
 
         # Step selection via Ctrl-T
         if ((QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_T)):
-            self.step_selection_dialog.show()
+            self.passwordDialogWrapper(self.step_selection_dialog)
 
-        # Debug layout via Ctrl-D
-        if ((QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_D)):
+        # Debug layout via Ctrl-L
+        if ((QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_L)):
             self.debugDisplay = not self.debugDisplay
             self.updateLayoutDebug()

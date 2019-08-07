@@ -55,9 +55,11 @@ class Station:
     # allow to add other handlers
     log_handlers = []
 
-
     # path to settings file
     default_settings_dir = "~/.sopic/settings/"
+
+    # optional password for the step and settings dialogs
+    admin_password = None
 
     # nextStepHandler: handler called when a new step start
     # clearStepsHandlerUI: handler called when starting a new run

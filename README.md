@@ -31,10 +31,10 @@ Check the examples directory.
 # Keybinds
 
 ### Exit the station
-Escape or Ctrl-C
+Ctrl-Q
 
 ### Settings
-**Ctrl-H**
+**Ctrl-P**
 
 DIsplay the settings dialog. The configuration is saved. The settings can be
 reset to the default configuration set in the station class.
@@ -44,8 +44,8 @@ reset to the default configuration set in the station class.
 
 Allow to enable/disable steps. The configuration is not saved.
 
-### Debug layout
-**Ctrl-D**
+### Log and settings layout
+**Ctrl-L**
 
 Display settings and log window
 
@@ -181,7 +181,7 @@ _unordered_
 - [ ] rework log format, they should be parseable
 - [ ] cleaner step definition (nonblocking/skipped/clean or ending step)
 - [ ] rework the main station loop, we should use a for-loop and not having to manually update the stepIndex
-- [ ] feature to freeze the settings and steps
+- [x] ~feature to freeze the settings and steps~ locked behing an optional password
 - [ ] publish package
 
 # See also

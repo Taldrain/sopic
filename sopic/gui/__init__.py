@@ -6,5 +6,6 @@ from .run_viewer_widget import RunViewerWidget
 from .settings_viewer_widget import SettingsViewerWidget
 from .step_selection_dialog import StepSelectionDialog
 from .settings_dialog import MainSettingsDialog
+from .password_dialog import PasswordDialog
 from .main_window import MainWindow
 from .step_ui_widget import StepUI
