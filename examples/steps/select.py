@@ -1,6 +1,6 @@
 import threading
 from PyQt5.QtWidgets import QPushButton, QHBoxLayout
-from PyQt5.QtCore import Qt, pyqtSlot, QSize
+from PyQt5.QtCore import Qt, pyqtSlot
 
 from sopic.step import Step
 from sopic.gui import StepUI

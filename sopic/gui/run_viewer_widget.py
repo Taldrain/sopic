@@ -45,8 +45,6 @@ class RunViewerWidget(QWidget):
         for step in self.station.getSteps():
             self.childs.append(StepStatusWidget(step.getStepName()))
 
-        self.childs[0].in_progress()
-
     def update_current_tab(self):
         new_index = self.station.getCurrentStep()
         self.childs[new_index].in_progress()

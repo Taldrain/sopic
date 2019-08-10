@@ -32,7 +32,8 @@ class MainWindow(QMainWindow):
             stepOKHandlerUI = self.stepOKHandlerUI,
             stepKOHandlerUI = self.stepKOHandlerUI,
             skipStepHandlerUI = self.skipStepHandlerUI,
-            endRunHandlerUI = self.endRunHandlerUI
+            endRunHandlerUI = self.endRunHandlerUI,
+            forceStepHandlerUI = self.forceStepHandlerUI,
         )
 
         if (settings_dialog is not None):
@@ -127,6 +128,11 @@ class MainWindow(QMainWindow):
 
     def endRunHandlerUI(self, runObj):
         self.station_status_widget.update(runObj)
+
+    def forceStepHandlerUI(self, index, clearRunViewer=False):
+        if (clearRunViewer):
+            self.run_viewer_widget.reset()
+        self.tab_manager_widget.specific_tab(index)
 
     def passwordDialogWrapper(self, secondDialog):
         showDialog = True

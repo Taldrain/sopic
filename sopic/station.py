@@ -11,14 +11,6 @@ STEP_OK = 'ok'
 STEP_KO = 'ko'
 RUN_TERMINATED = 'terminated'
 
-# stepDef is the step from the step array defined in a station.py file.
-# It can, sometimes, be a tuple (step, boolean) to overwrite the ACTIVATED
-# flag of the step.
-def initStep(stepDef, stationName, stationId, logger):
-    if (isinstance(stepDef, tuple)):
-        return stepDef[0](stationName, stationId, logger, stepDef[1] != False)
-
-    return stepDef(stationName, stationId, logger, True)
 
 #
 # Station class
@@ -61,6 +53,22 @@ class Station:
     # optional password for the step and settings dialogs
     admin_password = None
 
+    # Optional steps that will be used before and after a run
+    # They can be use to display a start/end button. Using those steps allow
+    # the station to use the startRunHandler and endRunHandler closer to the
+    # run.
+    #
+    # Example: if the last step of the array of steps was used to display a
+    # button to finish the current run and the status of the run (pass or fail).
+    # The operator might close the station or leave the station on this screen
+    # thinking the run was completed. But if the station was using the method
+    # endRunHandler, it will never be called.
+    # Creating a separation for the run and other operations (start/end run
+    # buttons or pass/fail information) allow us to use the startRunHandler
+    # and endRunHandler.
+    startStep = None
+    endStep = None
+
     # nextStepHandler: handler called when a new step start
     # clearStepsHandlerUI: handler called when starting a new run
     # stepOKHandler: handler called when a step is OK
@@ -72,7 +80,8 @@ class Station:
         stepOKHandlerUI = None,
         stepKOHandlerUI = None,
         skipStepHandlerUI = None,
-        endRunHandlerUI = None
+        endRunHandlerUI = None,
+        forceStepHandlerUI = None,
     ):
         self.logger = getLogger(
             self.STATION_NAME,
@@ -82,12 +91,13 @@ class Station:
             self.log_handlers,
             self.disable_log_handlers,
         )
-        self.steps = list(map(lambda x: initStep(
-            x,
-            self.STATION_NAME,
-            self.STATION_ID,
-            self.logger,
-        ), self.steps))
+
+        self.steps = list(map(lambda x: self._initStep(x), self.steps))
+        if (self.startStep is not None):
+            self.startStep = self._initStep(self.startStep)
+        if (self.endStep is not None):
+            self.endStep = self._initStep(self.endStep)
+
         self.stepIndex = 0
 
         self.nextStepHandlerUI = nextStepHandlerUI
@@ -96,6 +106,7 @@ class Station:
         self.stepKOHandlerUI = stepKOHandlerUI
         self.skipStepHandlerUI = skipStepHandlerUI
         self.endRunHandlerUI = endRunHandlerUI
+        self.forceStepHandlerUI = forceStepHandlerUI
 
         self.settingsPath = os.path.join(
             os.path.expanduser(self.default_settings_dir),
@@ -105,14 +116,18 @@ class Station:
         if (self.defaultSettings is not None):
             self._readSettingFile()
 
-        self._initStepData({
-            "success": True,
-            "consecutive_failed": 0,
-            "nb_failed": 0,
-            "nb_run": 0,
-        })
+        # first init of stepsData object
+        self._initStepData()
 
         self.logger.debug("Starting station")
+
+    # stepDef is the step from the step array defined in a station.py file.
+    # It can, sometimes, be a tuple (step, boolean) to overwrite the ACTIVATED
+    # flag of the step.
+    def _initStep(self, stepDef):
+        if (isinstance(stepDef, tuple)):
+            return stepDef[0](self.STATION_NAME, self.STATION_ID, self.logger, stepDef[1] != False)
+        return stepDef(self.STATION_NAME, self.STATION_ID, self.logger, True)
 
     def _readSettingFile(self):
         self.settings = self.defaultSettings.copy()
@@ -123,7 +138,7 @@ class Station:
         except:
             return
 
-    def _initStepData(self, previousRunInfo=None):
+    def _initStepData(self):
         self.stepsData = {
             **self.defaultStepsData,
             **{
@@ -135,10 +150,24 @@ class Station:
                 "__settings": self.settings,
                 "__errors": [],
                 "__run": {
-                    **previousRunInfo,
-                    **{
-                        "startDate": datetime.datetime.utcnow(),
-                    },
+                    "success": True,
+                    "consecutive_failed": 0,
+                    "nb_failed": 0,
+                    "nb_run": 0,
+                },
+            },
+        }
+
+    # reset errors array and reset stepsData['__run']['startDate']
+    # the previous __run object is merged
+    def _updateRunStepData(self):
+        self.stepsData = {
+            **self.stepsData,
+            "__errors": [],
+            "__run": {
+                **self.stepsData['__run'],
+                **{
+                    "startDate": datetime.datetime.utcnow(),
                 },
             },
         }
@@ -161,7 +190,7 @@ class Station:
             os.remove(self.settingsPath)
         except OSError:
             pass
-        # TODO is self.settings used
+        # TODO is self.settings used ?
         # we could just used __settings
         self.settings = self.defaultSettings.copy()
         self.stepsData['__settings'] = self.settings
@@ -183,17 +212,24 @@ class Station:
         while True:
             self.stepIndex = 0
 
+            # Optional step for display/interaction
+            if (self.startStep is not None):
+                self.forceStepHandlerUI(len(self.steps), clearRunViewer=True)
+                # empty startStep and stepResult is skipped
+                self.startStep.start({})
+
             self.startRunHandler()
+            # The run has now started
             isSuccessRun = self.run()
+            # The run is now over
             self.endRunHandler(isSuccessRun)
 
-            self._initStepData({
-                "success": isSuccessRun,
-                "consecutive_failed": (
-                    self.stepsData["__run"]["consecutive_failed"] + 1 if (not isSuccessRun) else 0),
-                "nb_run": (self.stepsData["__run"]["nb_run"] + 1),
-                "nb_failed": (self.stepsData["__run"]["nb_failed"] + 1 if (not isSuccessRun) else self.stepsData["__run"]["nb_failed"]),
-            })
+            # Optional step for display/interaction
+            if (self.endStep is not None):
+                self.forceStepHandlerUI(len(self.steps) + (1 if self.startStep is not None else 0))
+                # stepResult is skipped
+                self.endStep.start(self.stepsData)
+
 
     # Start a run
     def run(self):
@@ -225,7 +261,7 @@ class Station:
             except Exception as e:
                 # Catch any non-catched exception with a default errorCode
                 # The run is also terminated
-                stepResult = step.buildStepResult(False, True, e, 255, None)
+                stepResult = step.buildStepResult(False, True, str(e), 255, None)
                 self.logger.error("Exception not catch in step {}: {}".format(step.STEP_NAME, e))
 
             # The step has passed
@@ -276,6 +312,7 @@ class Station:
 
     # handler of the start run
     def startRunHandler(self):
+        self._updateRunStepData()
         self.clearStepsHandlerUI()
         self.logger.info("Starting run")
 
@@ -319,9 +356,17 @@ class Station:
 
     # handler of the end run
     def endRunHandler(self, isSuccessRun):
+        # Saving the start run date, it will be clear when we update the stepsData
+        startRunDate = self.stepsData['__run']['startDate']
+
+        # update stepsData for current run
+        self.stepsData['__run']['success'] = isSuccessRun
+        self.stepsData['__run']['consecutive_failed'] = self.stepsData["__run"]["consecutive_failed"] + 1 if (not isSuccessRun) else 0
+        self.stepsData['__run']['nb_run'] = self.stepsData["__run"]["nb_run"] + 1
+        self.stepsData['__run']['nb_failed'] = self.stepsData["__run"]["nb_failed"] + 1 if (not isSuccessRun) else self.stepsData["__run"]["nb_failed"]
+
         self.endRunHandlerUI(self.stepsData['__run'])
-        currentTime = datetime.datetime.utcnow()
-        self.logger.debug("Run took {}s".format((currentTime - self.stepsData["__run"]["startDate"]).seconds))
+        self.logger.debug("Run took {}s".format((datetime.datetime.utcnow() - startRunDate).seconds))
         self.logger.info("Run ended with a {}".format("SUCCESS" if isSuccessRun else "FAIL"))
         self.logger.info("Ending run ---------------------------------------")
 
