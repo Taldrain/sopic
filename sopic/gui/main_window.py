@@ -157,7 +157,7 @@ class MainWindow(QMainWindow):
         if ((QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_T)):
             self.passwordDialogWrapper(self.step_selection_dialog)
 
-        # Debug layout via Ctrl-L
-        if ((QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_L)):
+        # Debug layout via Ctrl-B
+        if ((QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_B)):
             self.debugDisplay = not self.debugDisplay
             self.updateLayoutDebug()

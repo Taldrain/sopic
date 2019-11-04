@@ -32,39 +32,35 @@ class Step:
     def end(self):
         self.logger.debug("Ending step " + self.STEP_NAME)
 
-    def buildStepResult(self, passed, terminate = False, infoStr = None, errorCode = None, resultObj = None):
+    def buildStepResult(self, passed, terminate = False, infoStr = None, errorCode = None):
         return {
             "passed": passed,
             "stepData": self.stepData,
             "terminate": terminate,
             "infoStr": infoStr,
             "errorCode": errorCode,
-            "resultObj": resultObj,
         }
 
     # The step has passed
     # stepData store data to be available for next steps
-    # resultObj allow the caller to store other data about the test
-    #   eg, if comparing a value, the thresholds could be saved to be stored in a log system
-    def OK(self, successStr = "", resultObj = None):
+    def OK(self, successStr = ""):
         logStr = "OK step [" + self.STEP_NAME + "]"
         if (len(successStr) > 0):
             logStr = logStr + " " + successStr
         self.logger.info(logStr)
-        return self.buildStepResult(True, infoStr=successStr, resultObj=resultObj)
+        return self.buildStepResult(True, infoStr=successStr)
 
     # The step has failed
     # stepData store data to be available for next steps
     # terminate force the station to end after this step
     # errorStr store string about the step error
     # errorCode store error code about the step error
-    # resultObj allow the caller to store other data about the test
-    def KO(self, terminate = False, errorStr = "", errorCode = None, resultObj = None):
+    def KO(self, terminate = False, errorStr = "", errorCode = None):
         logStr = "KO step [" + self.STEP_NAME + "]"
         if (len(errorStr) > 0):
             logStr = logStr + " " + errorStr
         self.logger.error(logStr)
-        return self.buildStepResult(False, terminate=terminate, infoStr=errorStr, errorCode=errorCode, resultObj=resultObj)
+        return self.buildStepResult(False, terminate=terminate, infoStr=errorStr, errorCode=errorCode)
 
     def getWidget(self):
         if (self.widget == None):

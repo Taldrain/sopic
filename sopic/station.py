@@ -261,7 +261,7 @@ class Station:
             except Exception as e:
                 # Catch any non-catched exception with a default errorCode
                 # The run is also terminated
-                stepResult = step.buildStepResult(False, True, str(e), 255, None)
+                stepResult = step.buildStepResult(False, True, str(e), 255)
                 self.logger.error("Exception not catch in step {}: {}".format(step.STEP_NAME, e))
 
             # The step has passed

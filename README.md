@@ -45,7 +45,7 @@ reset to the default configuration set in the station class.
 Allow to enable/disable steps. The configuration is not saved.
 
 ### Log and settings layout
-**Ctrl-L**
+**Ctrl-B**
 
 Display settings and log window
 
