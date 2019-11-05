@@ -138,8 +138,8 @@ class Station:
         except:
             return
 
-    def _initStepData(self):
-        self.stepsData = {
+    def getEmptyStepsData(self):
+        return ({
             **self.defaultStepsData,
             **{
                 "__status": {
@@ -156,14 +156,16 @@ class Station:
                     "nb_run": 0,
                 },
             },
-        }
+        })
+
+    def _initStepData(self):
+        self.stepsData = self.getEmptyStepsData()
 
     # reset errors array and reset stepsData['__run']['startDate']
     # the previous __run object is merged
     def _updateRunStepData(self):
         self.stepsData = {
-            **self.stepsData,
-            "__errors": [],
+            **(self.getEmptyStepsData()),
             "__run": {
                 **self.stepsData['__run'],
                 **{
@@ -312,6 +314,9 @@ class Station:
 
     # handler of the start run
     def startRunHandler(self):
+        # TODO we might want to separate it
+        # first reset the object at the top of the run,
+        # then update the time after the optional start step
         self._updateRunStepData()
         self.clearStepsHandlerUI()
         self.logger.info("Starting run")
