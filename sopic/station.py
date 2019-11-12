@@ -218,8 +218,8 @@ class Station:
             # Optional step for display/interaction
             if (self.startStep is not None):
                 self.forceStepHandlerUI(len(self.steps), clearRunViewer=True)
-                # empty startStep and stepResult is skipped
-                self.startStep.start({})
+                # stepResult is skipped
+                self.startStep.start(self.stepsData)
 
             self.startRunHandler()
             # The run has now started
