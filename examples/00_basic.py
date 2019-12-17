@@ -13,7 +13,7 @@ class BasicStation(Station):
     STATION_NAME = 'basic-station'
     STATION_ID = 0
 
-    disable_file_logging = True
+    disableFileLogging = True
 
     steps = [
         Select,

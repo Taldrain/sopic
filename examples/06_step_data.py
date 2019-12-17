@@ -13,7 +13,7 @@ class StepDataStation(Station):
     STATION_NAME = 'step-data-station'
     STATION_ID = 6
 
-    disable_file_logging = True
+    disableFileLogging = True
 
     steps = [
         StoreData,

@@ -14,7 +14,7 @@ class DisabledStepStation(Station):
     STATION_NAME = 'disabled-step-station'
     STATION_ID = 2
 
-    disable_file_logging = True
+    disableFileLogging = True
 
     steps = [
         Select,

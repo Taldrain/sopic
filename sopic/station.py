@@ -16,6 +16,11 @@ RUN_TERMINATED = 'terminated'
 # Station class
 #
 class Station:
+    # Should be overwritten by child
+    DISPLAY_NAME = ""
+    STATION_NAME = ""
+    STATION_ID = 0
+
     # list of steps name that will not steps the current run
     # by default a failure end the run
     nonBlockingSteps = []
@@ -31,27 +36,28 @@ class Station:
     # StepsData available for all steps, and defined in the child stations
     # Used for data shared between multiple steps
     defaultStepsData = {}
+    stepsData = {}
 
     defaultSettings = {}
     settings = None
 
     # path to logs file, if enabled
-    default_log_dir = "~/.sopic/logs/"
+    defaultLogDir = "~/.sopic/logs/"
 
     # should the log to file be enabled
-    disable_file_logging = False
+    disableFileLogging = False
 
     # disable all logger handlers
-    disable_log_handlers = False
+    disableLogHandlers = False
 
     # allow to add other handlers
-    log_handlers = []
+    logHandlers = []
 
     # path to settings file
-    default_settings_dir = "~/.sopic/settings/"
+    defaultSettingsDir = "~/.sopic/settings/"
 
     # optional password for the step and settings dialogs
-    admin_password = None
+    adminPassword = None
 
     # Optional steps that will be used before and after a run
     # They can be use to display a start/end button. Using those steps allow
@@ -69,33 +75,35 @@ class Station:
     startStep = None
     endStep = None
 
+    steps = []
+
     # nextStepHandler: handler called when a new step start
     # clearStepsHandlerUI: handler called when starting a new run
     # stepOKHandler: handler called when a step is OK
     # stepKOHandler: handler called when a step is KO
     def __init__(
-        self,
-        nextStepHandlerUI = None,
-        clearStepsHandlerUI = None,
-        stepOKHandlerUI = None,
-        stepKOHandlerUI = None,
-        skipStepHandlerUI = None,
-        endRunHandlerUI = None,
-        forceStepHandlerUI = None,
+            self,
+            nextStepHandlerUI=None,
+            clearStepsHandlerUI=None,
+            stepOKHandlerUI=None,
+            stepKOHandlerUI=None,
+            skipStepHandlerUI=None,
+            endRunHandlerUI=None,
+            forceStepHandlerUI=None,
     ):
         self.logger = getLogger(
             self.STATION_NAME,
             self.STATION_ID,
-            self.disable_file_logging,
-            self.default_log_dir,
-            self.log_handlers,
-            self.disable_log_handlers,
+            self.disableFileLogging,
+            self.defaultLogDir,
+            self.logHandlers,
+            self.disableLogHandlers,
         )
 
-        self.steps = list(map(lambda x: self._initStep(x), self.steps))
-        if (self.startStep is not None):
+        self.steps = list(map(self._initStep, self.steps))
+        if self.startStep is not None:
             self.startStep = self._initStep(self.startStep)
-        if (self.endStep is not None):
+        if self.endStep is not None:
             self.endStep = self._initStep(self.endStep)
 
         self.stepIndex = 0
@@ -109,11 +117,11 @@ class Station:
         self.forceStepHandlerUI = forceStepHandlerUI
 
         self.settingsPath = os.path.join(
-            os.path.expanduser(self.default_settings_dir),
+            os.path.expanduser(self.defaultSettingsDir),
             self.STATION_NAME + '.json',
         )
 
-        if (self.defaultSettings is not None):
+        if self.defaultSettings is not None:
             self._readSettingFile()
 
         # first init of stepsData object
@@ -125,8 +133,13 @@ class Station:
     # It can, sometimes, be a tuple (step, boolean) to overwrite the ACTIVATED
     # flag of the step.
     def _initStep(self, stepDef):
-        if (isinstance(stepDef, tuple)):
-            return stepDef[0](self.STATION_NAME, self.STATION_ID, self.logger, stepDef[1] != False)
+        if isinstance(stepDef, tuple):
+            return stepDef[0](
+                self.STATION_NAME,
+                self.STATION_ID,
+                self.logger,
+                stepDef[1] is not False,
+            )
         return stepDef(self.STATION_NAME, self.STATION_ID, self.logger, True)
 
     def _readSettingFile(self):
@@ -182,8 +195,8 @@ class Station:
     def updateSettingsFile(self):
         os.makedirs(os.path.dirname(self.settingsPath), exist_ok=True)
 
-        with open(self.settingsPath, 'w') as f:
-            json.dump(self.settings, f)
+        with open(self.settingsPath, 'w') as file:
+            json.dump(self.settings, file)
 
     # Resets the settings of the station by removing the local file
     # and re-setting the settings variable
@@ -216,7 +229,7 @@ class Station:
 
             self._cleanStepData()
             # Optional step for display/interaction
-            if (self.startStep is not None):
+            if self.startStep is not None:
                 self.forceStepHandlerUI(len(self.steps), clearRunViewer=True)
                 # stepResult is skipped
                 self.startStep.start(self.stepsData)
@@ -228,7 +241,7 @@ class Station:
             self.endRunHandler(isSuccessRun)
 
             # Optional step for display/interaction
-            if (self.endStep is not None):
+            if self.endStep is not None:
                 self.forceStepHandlerUI(len(self.steps) + (1 if self.startStep is not None else 0))
                 # stepResult is skipped
                 self.endStep.start(self.stepsData)
@@ -236,7 +249,7 @@ class Station:
 
     # Start a run
     def run(self):
-        number_retries = 0
+        numberRetries = 0
 
         isSuccessRun = True
 
@@ -247,14 +260,18 @@ class Station:
             self.nextStepHandlerUI()
 
             # Skip the step, it's been deactivated
-            if (step.ACTIVATED == False):
-                self.logger.warning("Skipping step {} - the step has been deactivated".format(step.STEP_NAME))
+            if step.ACTIVATED is False:
+                self.logger.warning(
+                    "Skipping step {} - the step has been deactivated".format(step.STEP_NAME)
+                )
                 self.endStepHandler(STEP_SKIPPED, step, {})
                 continue
 
             # Skip the step, a previous step has failed and this step is tagged as skip on fail
-            if (step.STEP_NAME in self.stepsSkippedOnPreviousFail and not isSuccessRun ):
-                self.logger.error("Skipping step {} - a previous step has failed".format(step.STEP_NAME))
+            if step.STEP_NAME in self.stepsSkippedOnPreviousFail and not isSuccessRun:
+                self.logger.error(
+                    "Skipping step {} - a previous step has failed".format(step.STEP_NAME)
+                )
                 self.endStepHandler(STEP_SKIPPED, step, {})
                 continue
 
@@ -265,43 +282,49 @@ class Station:
                 # Catch any non-catched exception with a default errorCode
                 # The run is also terminated
                 stepResult = step.buildStepResult(False, True, str(e), 255)
-                self.logger.error("Exception not catch in step {}: {}".format(step.STEP_NAME, e))
+                self.logger.error(
+                    "Exception not catch in step {}: {}".format(step.STEP_NAME, e)
+                )
 
             # The step has passed
-            if (stepResult["passed"]):
+            if stepResult["passed"]:
                 # Save the stepData object
                 self.stepsData[step.STEP_NAME] = stepResult["stepData"]
                 self.endStepHandler(STEP_OK, step, stepResult)
                 # Reset the number of retries
-                number_retries = 0
+                numberRetries = 0
             else:
                 # The step has failed
 
                 # Track if the step has terminated
-                if (stepResult["terminate"]):
+                if stepResult["terminate"]:
                     self.stepsData["__status"]["terminated"] = True
 
                 # If the step has not reach its max number of retries,
                 # we will relaunch the same step on the next loop iteration
-                if (step.MAX_RETRIES != 0 and number_retries < step.MAX_RETRIES):
-                    number_retries += 1
+                if (step.MAX_RETRIES != 0 and numberRetries < step.MAX_RETRIES):
+                    numberRetries += 1
                     self.logger.info("Retrying step")
                     self.endStepHandler(STEP_RETRY, step, stepResult)
                     continue
 
                 # The max number of retries is reached, or the step has no retry
                 isSuccessRun = False
-                number_retries = 0
+                numberRetries = 0
                 # Track the name of the last step that has failed
                 # Can be used to track the run status
                 self.stepsData["__status"]["lastFailedStep"] = step.STEP_NAME
                 self.stepsData[step.STEP_NAME] = stepResult["stepData"]
                 # When an errorCode is available, store it in the __errors array
-                if (stepResult["errorCode"] is not None):
-                    self.stepsData["__errors"].append((step.STEP_NAME, stepResult["errorCode"], stepResult["infoStr"]))
+                if stepResult["errorCode"] is not None:
+                    self.stepsData["__errors"].append(
+                        step.STEP_NAME,
+                        stepResult["errorCode"],
+                        stepResult["infoStr"],
+                    )
 
                 # The step is non blocking, and the station is not in a terminate run
-                if (self.isNonBlockingStep(step.STEP_NAME) and stepResult["terminate"] == False):
+                if (self.isNonBlockingStep(step.STEP_NAME) and stepResult["terminate"] is False):
                     # The step has failed, but the station will start the next step
                     self.logger.debug("Non-Blocking step reached")
                     self.endStepHandler(STEP_KO, step, stepResult)
@@ -332,24 +355,24 @@ class Station:
     #     Having a dedicated end run step would also be cleaner, insted of
     #     having to run the last step, even in terminated run.
     def endStepHandler(self, status, step, stepResult):
-        if (status == STEP_SKIPPED):
+        if status == STEP_SKIPPED:
             self.skipStepHandlerUI()
-        elif (status == STEP_OK):
+        elif status == STEP_OK:
             self.stepOKHandlerUI()
             step.end()
-        elif (status == STEP_KO):
+        elif status == STEP_KO:
             self.stepKOHandlerUI()
             step.end()
-        elif (status == STEP_RETRY):
+        elif status == STEP_RETRY:
             step.end()
             time.sleep(1)
             # retry the same step
             self.stepIndex -= 1
-        elif (status == RUN_TERMINATED):
+        elif status == RUN_TERMINATED:
             self.stepKOHandlerUI()
             step.end()
             # go to the last step, if we're not already on it
-            if (self.stepIndex != (len(self.steps) - 1)):
+            if self.stepIndex != (len(self.steps) - 1):
                 # XXX: the index will be incremented at the end of the function
                 # thats why we have a `len() - 2` instead of a `len() - 1`
                 self.stepIndex = len(self.steps) - 2
@@ -363,14 +386,19 @@ class Station:
         startRunDate = self.stepsData['__run']['startDate']
 
         # update stepsData for current run
+
         self.stepsData['__run']['success'] = isSuccessRun
-        self.stepsData['__run']['consecutive_failed'] = self.stepsData["__run"]["consecutive_failed"] + 1 if (not isSuccessRun) else 0
+        self.stepsData['__run']['consecutive_failed'] = (
+            self.stepsData['__run']['consecutive_failed'] + 1 if (not isSuccessRun) else 0
+        )
         self.stepsData['__run']['nb_run'] = self.stepsData["__run"]["nb_run"] + 1
-        self.stepsData['__run']['nb_failed'] = self.stepsData["__run"]["nb_failed"] + 1 if (not isSuccessRun) else self.stepsData["__run"]["nb_failed"]
+
+        nbFailed = self.stepsData['__run']['nb_failed']
+        self.stepsData['__run']['nb_failed'] = nbFailed + 1 if (not isSuccessRun) else nbFailed
 
         self.endRunHandlerUI(self.stepsData['__run'])
         self.logger.debug("Run took {}s".format((datetime.datetime.utcnow() - startRunDate).seconds))
-        self.logger.info("Run ended with a {}".format("SUCCESS" if isSuccessRun else "FAIL"))
+        self.logger.info("Run ended with a {}".format(("SUCCESS" if isSuccessRun else "FAIL")))
         self.logger.info("Ending run ---------------------------------------")
 
     # Check if stepName is non blocking

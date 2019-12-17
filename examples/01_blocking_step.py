@@ -14,7 +14,7 @@ class BlockingStepStation(Station):
     STATION_NAME = 'blocking-step-station'
     STATION_ID = 1
 
-    disable_file_logging = True
+    disableFileFogging = True
 
     steps = [
         # whatever the output (KO or OK) the next step will always be called

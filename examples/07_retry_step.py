@@ -13,7 +13,7 @@ class RetryStepStation(Station):
     STATION_NAME = 'retry-step-station'
     STATION_ID = 7
 
-    disable_file_logging = True
+    disableFileLogging = True
 
     steps = [
         Retry,

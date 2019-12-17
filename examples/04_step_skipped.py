@@ -14,7 +14,7 @@ class StepSkippedStation(Station):
 
     STATION_ID = 4
 
-    disable_file_logging = True
+    disableFileLogging = True
 
     steps = [
         Select,

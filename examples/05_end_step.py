@@ -13,7 +13,7 @@ class EndStepStation(Station):
     STATION_NAME = 'end-step-station'
     STATION_ID = 5
 
-    disable_file_logging = True
+    disableFileLogging = True
 
     steps = [
         Select,

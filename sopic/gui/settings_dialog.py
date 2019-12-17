@@ -16,36 +16,33 @@ class MainSettingsDialog(QDialog):
         self.cbUpdateFile = callbackUpdateFile
         self.cbResetSettings = callbackResetSettings
 
-        reset_button = QPushButton('Reset')
-        reset_button.clicked.connect(self.slot_reset_button)
+        resetButton = QPushButton('Reset')
+        resetButton.clicked.connect(self.handleReset)
 
-        ok_button = QPushButton('OK')
-        ok_button.clicked.connect(self.slot_ok_button)
+        buttonOK = QPushButton('OK')
+        buttonOK.clicked.connect(self.handleOK)
 
         self.layout = QGridLayout(self)
-        self.layout.addWidget(ok_button, 99, 1)
-        self.layout.addWidget(reset_button, 99, 0)
+        self.layout.addWidget(buttonOK, 99, 1)
+        self.layout.addWidget(resetButton, 99, 0)
 
         # From child class
-        self.init_gui()
-        self.init_values()
+        self.initUI()
+        self.initValues()
 
         for index, value in enumerate(self.widgets):
             self.layout.addWidget(value[0], index, 0)
             self.layout.addWidget(value[1], index, 1)
 
-        self.set_layout()
+        self.setLayout(self.layout)
+        self.setWindowTitle('Settings')
 
-    def slot_ok_button(self):
+    def handleOK(self):
         self.cbUpdateFile()
         super().accept()
 
-    def slot_reset_button(self):
+    def handleReset(self):
         self.cbResetSettings()
         self.settings = self.station.settings
-        self.init_values()
+        self.initValues()
         super().accept()
-
-    def set_layout(self):
-        self.setLayout(self.layout)
-        self.setWindowTitle('Settings')
