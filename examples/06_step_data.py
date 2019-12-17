@@ -22,7 +22,6 @@ class StepDataStation(Station):
     ]
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    mainwindow = MainWindow(StepDataStation)
-    mainwindow.show()
-    sys.exit(app.exec_())
+    Q_APP = QApplication(sys.argv)
+    MainWindow(StepDataStation).show()
+    sys.exit(Q_APP.exec_())

@@ -29,7 +29,6 @@ class BlockingStepStation(Station):
     ]
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    mainwindow = MainWindow(BlockingStepStation)
-    mainwindow.show()
-    sys.exit(app.exec_())
+    Q_APP = QApplication(sys.argv)
+    MainWindow(BlockingStepStation).show()
+    sys.exit(Q_APP.exec_())

@@ -27,6 +27,7 @@ class SettingsStation(Station):
 
 
 class SettingsDialog(MainSettingsDialog):
+    textWidget = None
     # Required
     # Initialize the gui
     def initUI(self):
@@ -47,7 +48,6 @@ class SettingsDialog(MainSettingsDialog):
 
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    mainwindow = MainWindow(SettingsStation, SettingsDialog)
-    mainwindow.show()
-    sys.exit(app.exec_())
+    Q_APP = QApplication(sys.argv)
+    MainWindow(SettingsStation, SettingsDialog).show()
+    sys.exit(Q_APP.exec_())

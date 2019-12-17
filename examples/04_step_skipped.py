@@ -34,7 +34,6 @@ class StepSkippedStation(Station):
     ]
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    mainwindow = MainWindow(StepSkippedStation)
-    mainwindow.show()
-    sys.exit(app.exec_())
+    Q_APP = QApplication(sys.argv)
+    MainWindow(StepSkippedStation).show()
+    sys.exit(Q_APP.exec_())

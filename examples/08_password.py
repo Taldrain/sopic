@@ -30,6 +30,8 @@ class PasswordStation(Station):
 
 
 class SettingsDialog(MainSettingsDialog):
+    textWidget = None
+
     def initUI(self):
         self.textWidget = QLineEdit()
         self.textWidget.textChanged.connect(self.handleText)
@@ -48,7 +50,6 @@ class SettingsDialog(MainSettingsDialog):
 
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    mainwindow = MainWindow(PasswordStation, SettingsDialog)
-    mainwindow.show()
-    sys.exit(app.exec_())
+    Q_APP = QApplication(sys.argv)
+    MainWindow(PasswordStation, SettingsDialog).show()
+    sys.exit(Q_APP.exec_())

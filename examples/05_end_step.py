@@ -22,7 +22,6 @@ class EndStepStation(Station):
     ]
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    mainwindow = MainWindow(EndStepStation)
-    mainwindow.show()
-    sys.exit(app.exec_())
+    Q_APP = QApplication(sys.argv)
+    MainWindow(EndStepStation).show()
+    sys.exit(Q_APP.exec_())

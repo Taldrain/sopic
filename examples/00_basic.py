@@ -27,7 +27,6 @@ class BasicStation(Station):
     ]
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    mainwindow = MainWindow(BasicStation)
-    mainwindow.show()
-    sys.exit(app.exec_())
+    Q_APP = QApplication(sys.argv)
+    MainWindow(BasicStation).show()
+    sys.exit(Q_APP.exec_())
