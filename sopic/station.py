@@ -317,11 +317,11 @@ class Station:
                 self.stepsData[step.STEP_NAME] = stepResult["stepData"]
                 # When an errorCode is available, store it in the __errors array
                 if stepResult["errorCode"] is not None:
-                    self.stepsData["__errors"].append(
+                    self.stepsData["__errors"].append((
                         step.STEP_NAME,
                         stepResult["errorCode"],
                         stepResult["infoStr"],
-                    )
+                    ))
 
                 # The step is non blocking, and the station is not in a terminate run
                 if (self.isNonBlockingStep(step.STEP_NAME) and stepResult["terminate"] is False):
