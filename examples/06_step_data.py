@@ -13,7 +13,7 @@ class StepDataStation(Station):
     STATION_NAME = 'step-data-station'
     STATION_ID = 6
 
-    disable_file_logging = True
+    disableFileLogging = True
 
     steps = [
         StoreData,
@@ -22,7 +22,6 @@ class StepDataStation(Station):
     ]
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    mainwindow = MainWindow(StepDataStation)
-    mainwindow.show()
-    sys.exit(app.exec_())
+    Q_APP = QApplication(sys.argv)
+    MainWindow(StepDataStation).show()
+    sys.exit(Q_APP.exec_())

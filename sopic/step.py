@@ -4,11 +4,13 @@ from .gui import StepUI
 # Step class
 #
 class Step:
-    widget = None
-    stepData = {}
     # Useful for flaky tests
     MAX_RETRIES = 0
     ACTIVATED = True
+    STEP_NAME = ""
+
+    widget = None
+    stepData = {}
 
     # XXX: We could remove stationName and stationID and force the use of
     # stepsData to retrieve them.
@@ -32,7 +34,7 @@ class Step:
     def end(self):
         self.logger.debug("Ending step " + self.STEP_NAME)
 
-    def buildStepResult(self, passed, terminate = False, infoStr = None, errorCode = None):
+    def buildStepResult(self, passed, terminate=False, infoStr=None, errorCode=None):
         return {
             "passed": passed,
             "stepData": self.stepData,
@@ -43,9 +45,9 @@ class Step:
 
     # The step has passed
     # stepData store data to be available for next steps
-    def OK(self, successStr = ""):
+    def OK(self, successStr=""):
         logStr = "OK step [" + self.STEP_NAME + "]"
-        if (len(successStr) > 0):
+        if len(successStr) > 0:
             logStr = logStr + " " + successStr
         self.logger.info(logStr)
         return self.buildStepResult(True, infoStr=successStr)
@@ -55,15 +57,20 @@ class Step:
     # terminate force the station to end after this step
     # errorStr store string about the step error
     # errorCode store error code about the step error
-    def KO(self, terminate = False, errorStr = "", errorCode = None):
+    def KO(self, terminate=False, errorStr="", errorCode=None):
         logStr = "KO step [" + self.STEP_NAME + "]"
-        if (len(errorStr) > 0):
+        if len(errorStr) > 0:
             logStr = logStr + " " + errorStr
         self.logger.error(logStr)
-        return self.buildStepResult(False, terminate=terminate, infoStr=errorStr, errorCode=errorCode)
+        return self.buildStepResult(
+            False,
+            terminate=terminate,
+            infoStr=errorStr,
+            errorCode=errorCode
+        )
 
     def getWidget(self):
-        if (self.widget == None):
+        if self.widget is None:
             self.widget = StepUI()
 
         return self.widget

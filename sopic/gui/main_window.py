@@ -1,3 +1,5 @@
+import threading
+
 from PyQt5.QtWidgets import (
     QWidget,
     QMainWindow,
@@ -9,155 +11,159 @@ from PyQt5.QtWidgets import (
 
 from PyQt5.QtCore import Qt
 
-import threading
-
-from . import LoggerWidget
-from . import TabManagerWidget
-from . import RunViewerWidget
-from . import SettingsViewerWidget
-from . import StepSelectionDialog
-from . import StationStatusWidget
-from . import PasswordDialog
+from .logger_widget import LoggerWidget
+from .tab_manager_widget import TabManagerWidget
+from .run_viewer_widget import RunViewerWidget
+from .settings_viewer_widget import SettingsViewerWidget
+from .step_selection_dialog import StepSelectionDialog
+from .station_status_widget import StationStatusWidget
+from .password_dialog import PasswordDialog
 
 class MainWindow(QMainWindow):
-    settings_dialog = None
-    debugDisplay = False
-    password_dialog = None
+    settingsDialog = None
+    passwordDialog = None
+    splitter = None
 
-    def __init__(self, station, settings_dialog=None):
+    loggerWidget = None
+    tabManagerWidget = None
+    stationStatusWidget = None
+    runViewerWidget = None
+    settingsViewerWidget = None
+
+    debugDisplay = False
+
+    def __init__(self, station, settingsDialog=None):
         super().__init__()
         self.station = station(
-            nextStepHandlerUI = self.nextStepHandlerUI,
-            clearStepsHandlerUI = self.clearStepsHandlerUI,
-            stepOKHandlerUI = self.stepOKHandlerUI,
-            stepKOHandlerUI = self.stepKOHandlerUI,
-            skipStepHandlerUI = self.skipStepHandlerUI,
-            endRunHandlerUI = self.endRunHandlerUI,
-            forceStepHandlerUI = self.forceStepHandlerUI,
+            nextStepHandlerUI=self.nextStepHandlerUI,
+            clearStepsHandlerUI=self.clearStepsHandlerUI,
+            stepOKHandlerUI=self.stepOKHandlerUI,
+            stepKOHandlerUI=self.stepKOHandlerUI,
+            skipStepHandlerUI=self.skipStepHandlerUI,
+            endRunHandlerUI=self.endRunHandlerUI,
+            forceStepHandlerUI=self.forceStepHandlerUI,
         )
 
-        if (settings_dialog is not None):
-            self.settings_dialog = settings_dialog(
+        if settingsDialog is not None:
+            self.settingsDialog = settingsDialog(
                 self.station,
                 self.station.updateValueSettings,
                 self.station.updateSettingsFile,
                 self.station.resetSettings
             )
 
-        self.step_selection_dialog = StepSelectionDialog(
-                self.station.steps
-        )
+        self.stepStepDialog = StepSelectionDialog(self.station.steps)
 
-        if (station.admin_password is not None):
-            self.password_dialog = PasswordDialog(station.admin_password)
+        if station.adminPassword is not None:
+            self.passwordDialog = PasswordDialog(station.adminPassword)
 
-        self.init_gui()
+        self.initUI()
 
-        self.worker_thread = threading.Thread(target=self.start)
-        self.worker_thread.daemon = True
-        self.worker_thread.start()
+        self.workerThread = threading.Thread(target=self.start)
+        self.workerThread.daemon = True
+        self.workerThread.start()
 
-    def init_gui(self):
-        self.init_widgets()
-        center_widget = QWidget()
+    def initUI(self):
+        self.initWidgets()
+        centerWidget = QWidget()
 
         vlayoutMain = QVBoxLayout()
         hlayoutChild = QHBoxLayout()
 
-        vlayoutMain.addWidget(self.run_viewer_widget)
-        vlayoutMain.addWidget(self.station_status_widget)
+        vlayoutMain.addWidget(self.runViewerWidget)
+        vlayoutMain.addWidget(self.stationStatusWidget)
 
-        self.splitter.addWidget(self.tab_manager_widget)
-        self.splitter.addWidget(self.logger_widget)
+        self.splitter.addWidget(self.tabManagerWidget)
+        self.splitter.addWidget(self.loggerWidget)
 
         hlayoutChild.addWidget(self.splitter)
 
-        if (self.settings_dialog is not None):
-            hlayoutChild.addWidget(self.settings_viewer_widget)
+        if self.settingsDialog is not None:
+            hlayoutChild.addWidget(self.settingsViewerWidget)
 
         vlayoutMain.addLayout(hlayoutChild)
         vlayoutMain.setStretchFactor(hlayoutChild, 60)
 
-        center_widget.setLayout(vlayoutMain)
-        self.setCentralWidget(center_widget)
+        centerWidget.setLayout(vlayoutMain)
+        self.setCentralWidget(centerWidget)
         self.setMinimumSize(640, 480)
         self.setWindowTitle(self.station.getDisplayName())
 
-    def init_widgets(self):
-        self.logger_widget = LoggerWidget(self)
-        self.station.logger.addHandler(self.logger_widget)
+    def initWidgets(self):
+        self.loggerWidget = LoggerWidget()
+        self.station.logger.addHandler(self.loggerWidget)
         self.splitter = QSplitter()
-        self.tab_manager_widget = TabManagerWidget(self.station)
-        self.station_status_widget = StationStatusWidget()
-        self.run_viewer_widget = RunViewerWidget(self.station)
-        if (self.settings_dialog is not None):
-            self.settings_viewer_widget = SettingsViewerWidget(self.station)
-            self.settings_dialog.accepted.connect(self.settings_viewer_widget.slot_update)
+        self.tabManagerWidget = TabManagerWidget(self.station)
+        self.stationStatusWidget = StationStatusWidget()
+        self.runViewerWidget = RunViewerWidget(self.station)
+        if self.settingsDialog is not None:
+            self.settingsViewerWidget = SettingsViewerWidget(self.station)
+            self.settingsDialog.accepted.connect(self.settingsViewerWidget.refresh)
         self.updateLayoutDebug()
 
     def updateLayoutDebug(self):
         if self.debugDisplay:
-            self.logger_widget.show()
-            if (self.settings_dialog):
-                self.settings_viewer_widget.show()
+            self.loggerWidget.show()
+            if self.settingsDialog:
+                self.settingsViewerWidget.show()
         else:
-            self.logger_widget.hide()
-            if (self.settings_dialog):
-                self.settings_viewer_widget.hide()
+            self.loggerWidget.hide()
+            if self.settingsDialog:
+                self.settingsViewerWidget.hide()
 
     def start(self):
         self.station.start()
 
     def nextStepHandlerUI(self):
-        self.tab_manager_widget.update_current_tab()
-        self.run_viewer_widget.update_current_tab()
+        self.tabManagerWidget.updateCurrentTab()
+        self.runViewerWidget.updateCurrentTab()
 
     def skipStepHandlerUI(self):
-        self.run_viewer_widget.current_tab_skipped()
+        self.runViewerWidget.currentTabSkipped()
 
     def clearStepsHandlerUI(self):
-        self.run_viewer_widget.reset()
+        self.runViewerWidget.reset()
         # we re-update the current tab, it was cleaned with the previous reset
-        self.run_viewer_widget.update_current_tab()
+        self.runViewerWidget.updateCurrentTab()
 
     def stepOKHandlerUI(self):
-        self.run_viewer_widget.current_tab_ok()
+        self.runViewerWidget.currentTabOK()
 
     def stepKOHandlerUI(self):
-        self.run_viewer_widget.current_tab_ko()
+        self.runViewerWidget.currentTabKO()
 
     def endRunHandlerUI(self, runObj):
-        self.station_status_widget.update(runObj)
+        self.stationStatusWidget.update(runObj)
 
     def forceStepHandlerUI(self, index, clearRunViewer=False):
-        if (clearRunViewer):
-            self.run_viewer_widget.reset()
-        self.tab_manager_widget.specific_tab(index)
+        if clearRunViewer:
+            self.runViewerWidget.reset()
+        self.tabManagerWidget.switchToTabIndex(index)
 
     def passwordDialogWrapper(self, secondDialog):
         showDialog = True
-        if (self.password_dialog):
-            showDialog = self.password_dialog.exec_() is 1
-        if (showDialog is True):
+        if self.passwordDialog:
+            showDialog = self.passwordDialog.exec_() == 1
+        if showDialog is True:
             secondDialog.show()
 
     def keyPressEvent(self, event):
         k = event.key()
 
         # Quit via Ctrl-Q
-        if (k == Qt.Key_Q and (QApplication.keyboardModifiers() & Qt.ControlModifier)):
+        if k == Qt.Key_Q and (QApplication.keyboardModifiers() & Qt.ControlModifier):
             self.close()
 
         # Settings via Ctrl-P
-        if ((QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_P)):
-            if (self.settings_dialog):
-                self.passwordDialogWrapper(self.settings_dialog)
+        if (QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_P):
+            if self.settingsDialog:
+                self.passwordDialogWrapper(self.settingsDialog)
 
         # Step selection via Ctrl-T
-        if ((QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_T)):
-            self.passwordDialogWrapper(self.step_selection_dialog)
+        if (QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_T):
+            self.passwordDialogWrapper(self.stepStepDialog)
 
         # Debug layout via Ctrl-B
-        if ((QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_B)):
+        if (QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_B):
             self.debugDisplay = not self.debugDisplay
             self.updateLayoutDebug()

@@ -13,7 +13,7 @@ class RetryStepStation(Station):
     STATION_NAME = 'retry-step-station'
     STATION_ID = 7
 
-    disable_file_logging = True
+    disableFileLogging = True
 
     steps = [
         Retry,
@@ -21,7 +21,6 @@ class RetryStepStation(Station):
     ]
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    mainwindow = MainWindow(RetryStepStation)
-    mainwindow.show()
-    sys.exit(app.exec_())
+    Q_APP = QApplication(sys.argv)
+    MainWindow(RetryStepStation).show()
+    sys.exit(Q_APP.exec_())

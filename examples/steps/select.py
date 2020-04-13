@@ -1,6 +1,6 @@
 import threading
 from PyQt5.QtWidgets import QPushButton, QHBoxLayout
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import pyqtSlot
 
 from sopic.step import Step
 from sopic.gui import StepUI
@@ -11,56 +11,52 @@ from sopic.gui import StepUI
 IS_OK = True
 
 class SelectUI(StepUI):
-    def __init__(self, parent = None, event = None):
-        self.event = event
+    def __init__(self, parent=None, event=None):
         super().__init__(parent)
+        self.event = event
 
-    def init_gui(self):
-        self.init_widgets()
+        buttonOK = QPushButton('OK')
+        buttonOK.clicked.connect(self.handleClickOK)
+
+        buttonKO = QPushButton('KO')
+        buttonKO.clicked.connect(self.handleClickKO)
 
         htoplayout = QHBoxLayout()
-        htoplayout.addWidget(self.ok_btn)
-        htoplayout.addWidget(self.ko_btn)
+        htoplayout.addWidget(buttonOK)
+        htoplayout.addWidget(buttonKO)
 
         self.setLayout(htoplayout)
 
-    def init_widgets(self):
-        self.ok_btn = QPushButton('OK')
-        self.ok_btn.clicked.connect(self.slot_ok)
-
-        self.ko_btn = QPushButton('KO')
-        self.ko_btn.clicked.connect(self.slot_ko)
-
     @pyqtSlot()
-    def slot_ok(self):
+    def handleClickOK(self):
         global IS_OK
-        IS_OK=True
+        IS_OK = True
         self.event.set()
 
     @pyqtSlot()
-    def slot_ko(self):
+    def handleClickKO(self):
         global IS_OK
-        IS_OK=False
+        IS_OK = False
         self.event.set()
 
 class Select(Step):
     STEP_NAME = 'button-select'
     event = threading.Event()
 
-    def start(self, stepsData):
+    def start(self, _stepsData):
         super().start()
 
         self.event.wait()
         self.event.clear()
 
         global IS_OK
-        if (IS_OK is True):
+        if IS_OK:
             return self.OK()
 
         return self.KO()
 
     def getWidget(self):
-        if (self.widget == None):
-            self.widget = SelectUI(event = self.event)
+        if self.widget is None:
+            self.widget = SelectUI(event=self.event)
 
         return self.widget

@@ -5,15 +5,15 @@ from PyQt5.QtWidgets import (
     QLabel,
 )
 
+def formatDisplayStat(x, y):
+    return "{}/{} ({:.0f}%)".format(x, y, (0 if y == 0 else x/y) * 100)
+
 class StationStatusWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+
         self.avgTime = 0
-
-        self.init_gui()
-
-    def init_gui(self):
-        self.init_widgets()
+        self.initWidgets()
         hlayout = QHBoxLayout()
         hlayout.addWidget(self.nbPassed)
         hlayout.addWidget(self.nbFailed)
@@ -23,12 +23,9 @@ class StationStatusWidget(QWidget):
 
         self.setLayout(hlayout)
 
-    def formatDisplayStat(self, x, y):
-        return "{}/{} ({:.0f}%)".format(x, y, (0 if y == 0 else x/y) * 100)
-
-    def init_widgets(self):
-        self.nbPassed = QLabel("Number of passed: " + self.formatDisplayStat(0, 0))
-        self.nbFailed = QLabel("Number of failed: " + self.formatDisplayStat(0, 0))
+    def initWidgets(self):
+        self.nbPassed = QLabel("Number of passed: " + formatDisplayStat(0, 0))
+        self.nbFailed = QLabel("Number of failed: " + formatDisplayStat(0, 0))
         self.consecutiveFailed = QLabel("Consecutive fails: 0")
         self.stepTimer = QLabel("Previous run: {}s (avg: {}s)".format(0, 0))
         self.stationTime = QLabel("Date: {}".format(datetime.date.today().isoformat()))
@@ -38,10 +35,10 @@ class StationStatusWidget(QWidget):
         nbRun = runObj['nb_run']
         runPass = nbRun - runFail
         timeSpent = (datetime.datetime.utcnow() - runObj['startDate']).seconds
-        if (nbRun > 0):
+        if nbRun > 0:
             self.avgTime = (self.avgTime * (nbRun - 1) / nbRun) + timeSpent / nbRun
 
-        self.nbPassed.setText("Number of passed: " + self.formatDisplayStat(runPass, nbRun))
-        self.nbFailed.setText("Number of failed: " + self.formatDisplayStat(runFail, nbRun))
+        self.nbPassed.setText("Number of passed: " + formatDisplayStat(runPass, nbRun))
+        self.nbFailed.setText("Number of failed: " + formatDisplayStat(runFail, nbRun))
         self.consecutiveFailed.setText("Consecutive fails: " + str(runObj['consecutive_failed']))
         self.stepTimer.setText("Previous run: {}s (avg: {:.1f}s)".format(timeSpent, self.avgTime))

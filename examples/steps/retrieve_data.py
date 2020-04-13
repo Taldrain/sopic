@@ -1,7 +1,6 @@
 from sopic.step import Step
-from sopic.gui import StepUI
 
-from . import StoreData
+from .store_data import StoreData
 
 class RetrieveData(Step):
     STEP_NAME = 'retrieve-data'

@@ -1,13 +1,12 @@
 from random import randint
 
 from sopic.step import Step
-from sopic.gui import StepUI
 
 class StoreData(Step):
     STEP_NAME = 'store-data'
     EXPORTED_KEY = 'random-value'
 
-    def start(self, stepsData):
+    def start(self, _stepsData):
         super().start()
 
         randomValue = randint(0, 9)
