@@ -8,7 +8,11 @@ from PyQt5.QtWidgets import (
 
 def handleClick(step):
     def _handleClick(state):
-        step.ACTIVATED = state
+        # from qt doc:
+        # 0: unchecked
+        # 1: partially checked
+        # 2: checked
+        step.ACTIVATED = (state == 2)
 
     return _handleClick
 
