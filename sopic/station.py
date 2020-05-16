@@ -20,6 +20,7 @@ class Station:
     DISPLAY_NAME = ""
     STATION_NAME = ""
     STATION_ID = 0
+    STATION_VERSION = None
 
     # list of steps name that will not steps the current run
     # by default a failure end the run

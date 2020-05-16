@@ -17,6 +17,7 @@ from .run_viewer_widget import RunViewerWidget
 from .settings_viewer_widget import SettingsViewerWidget
 from .step_selection_dialog import StepSelectionDialog
 from .station_status_widget import StationStatusWidget
+from .station_info_widget import StationInfoWidget
 from .password_dialog import PasswordDialog
 
 class MainWindow(QMainWindow):
@@ -29,6 +30,7 @@ class MainWindow(QMainWindow):
     stationStatusWidget = None
     runViewerWidget = None
     settingsViewerWidget = None
+    stationInfoWidget = None
 
     debugDisplay = False
 
@@ -82,6 +84,8 @@ class MainWindow(QMainWindow):
             hlayoutChild.addWidget(self.settingsViewerWidget)
 
         vlayoutMain.addLayout(hlayoutChild)
+        if self.stationInfoWidget is not None:
+            vlayoutMain.addWidget(self.stationInfoWidget)
         vlayoutMain.setStretchFactor(hlayoutChild, 60)
 
         centerWidget.setLayout(vlayoutMain)
@@ -99,6 +103,8 @@ class MainWindow(QMainWindow):
         if self.settingsDialog is not None:
             self.settingsViewerWidget = SettingsViewerWidget(self.station)
             self.settingsDialog.accepted.connect(self.settingsViewerWidget.refresh)
+        if self.station.STATION_VERSION is not None and len(self.station.STATION_VERSION) > 0:
+            self.stationInfoWidget = StationInfoWidget(self.station.STATION_VERSION)
         self.updateLayoutDebug()
 
     def updateLayoutDebug(self):

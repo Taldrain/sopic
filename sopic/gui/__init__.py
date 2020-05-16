@@ -1,4 +1,5 @@
 from .station_status_widget import StationStatusWidget
+from .station_info_widget import StationInfoWidget
 from .logger_widget import LoggerWidget
 from .tab_manager_widget import TabManagerWidget
 from .step_status_widget import StepStatusWidget

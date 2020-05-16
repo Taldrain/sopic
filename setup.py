@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='sopic',
-    version='0.0.5',
+    version='0.0.6',
     description='Helper for manufacturing station',
     install_requires=[
         'PyQt5==5.13.1',
