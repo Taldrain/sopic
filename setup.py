@@ -1,10 +1,10 @@
 from setuptools import setup
 
 setup(name='sopic',
-    version='0.0.6',
+    version='0.0.7',
     description='Helper for manufacturing station',
     install_requires=[
-        'PyQt5==5.13.1',
+        'PyQt5==5.*',
         'colorlog==4.1.0',
     ],
     packages=['sopic', 'sopic.gui', 'sopic.utils'],
