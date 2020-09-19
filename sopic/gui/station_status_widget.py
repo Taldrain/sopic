@@ -5,8 +5,10 @@ from PyQt5.QtWidgets import (
     QLabel,
 )
 
+
 def formatDisplayStat(x, y):
-    return "{}/{} ({:.0f}%)".format(x, y, (0 if y == 0 else x/y) * 100)
+    return "{}/{} ({:.0f}%)".format(x, y, (0 if y == 0 else x / y) * 100)
+
 
 class StationStatusWidget(QWidget):
     def __init__(self, parent=None):
@@ -31,14 +33,18 @@ class StationStatusWidget(QWidget):
         self.stationTime = QLabel("Date: {}".format(datetime.date.today().isoformat()))
 
     def update(self, runObj):
-        runFail = runObj['nb_failed']
-        nbRun = runObj['nb_run']
+        runFail = runObj["nb_failed"]
+        nbRun = runObj["nb_run"]
         runPass = nbRun - runFail
-        timeSpent = (datetime.datetime.utcnow() - runObj['startDate']).seconds
+        timeSpent = (datetime.datetime.utcnow() - runObj["startDate"]).seconds
         if nbRun > 0:
             self.avgTime = (self.avgTime * (nbRun - 1) / nbRun) + timeSpent / nbRun
 
         self.nbPassed.setText("Number of passed: " + formatDisplayStat(runPass, nbRun))
         self.nbFailed.setText("Number of failed: " + formatDisplayStat(runFail, nbRun))
-        self.consecutiveFailed.setText("Consecutive fails: " + str(runObj['consecutive_failed']))
-        self.stepTimer.setText("Previous run: {}s (avg: {:.1f}s)".format(timeSpent, self.avgTime))
+        self.consecutiveFailed.setText(
+            "Consecutive fails: " + str(runObj["consecutive_failed"])
+        )
+        self.stepTimer.setText(
+            "Previous run: {}s (avg: {:.1f}s)".format(timeSpent, self.avgTime)
+        )

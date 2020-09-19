@@ -1,11 +1,10 @@
-from PyQt5.QtWidgets import (
-    QDialog,
-    QGridLayout,
-    QPushButton
-)
+from PyQt5.QtWidgets import QDialog, QGridLayout, QPushButton
+
 
 class MainSettingsDialog(QDialog):
-    def __init__(self, station, callbackUpdateSettings, callbackUpdateFile, callbackResetSettings):
+    def __init__(
+        self, station, callbackUpdateSettings, callbackUpdateFile, callbackResetSettings
+    ):
         super().__init__()
 
         self.station = station
@@ -16,10 +15,10 @@ class MainSettingsDialog(QDialog):
         self.cbUpdateFile = callbackUpdateFile
         self.cbResetSettings = callbackResetSettings
 
-        resetButton = QPushButton('Reset')
+        resetButton = QPushButton("Reset")
         resetButton.clicked.connect(self.handleReset)
 
-        buttonOK = QPushButton('OK')
+        buttonOK = QPushButton("OK")
         buttonOK.clicked.connect(self.handleOK)
 
         self.layout = QGridLayout(self)
@@ -35,7 +34,7 @@ class MainSettingsDialog(QDialog):
             self.layout.addWidget(value[1], index, 1)
 
         self.setLayout(self.layout)
-        self.setWindowTitle('Settings')
+        self.setWindowTitle("Settings")
 
     def handleOK(self):
         self.cbUpdateFile()

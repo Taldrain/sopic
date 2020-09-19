@@ -2,9 +2,10 @@ from random import randint
 
 from sopic.step import Step
 
+
 class StoreData(Step):
-    STEP_NAME = 'store-data'
-    EXPORTED_KEY = 'random-value'
+    STEP_NAME = "store-data"
+    EXPORTED_KEY = "random-value"
 
     def start(self, _stepsData):
         super().start()

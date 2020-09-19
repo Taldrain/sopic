@@ -6,6 +6,7 @@ from PyQt5.QtGui import QColor, QBrush
 
 from ..utils import getDefaultFormatter
 
+
 class LoggerWidget(QPlainTextEdit, logging.Handler):
     signal = pyqtSignal(str, int)
 

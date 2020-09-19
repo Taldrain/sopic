@@ -10,8 +10,8 @@ from examples.steps import Select, AlwaysOK
 
 
 class DisabledStepStation(Station):
-    DISPLAY_NAME = 'station with step disabled by default'
-    STATION_NAME = 'disabled-step-station'
+    DISPLAY_NAME = "station with step disabled by default"
+    STATION_NAME = "disabled-step-station"
     STATION_ID = 2
 
     disableFileLogging = True
@@ -25,7 +25,7 @@ class DisabledStepStation(Station):
     ]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     Q_APP = QApplication(sys.argv)
     MainWindow(DisabledStepStation).show()
     sys.exit(Q_APP.exec_())

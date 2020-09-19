@@ -10,8 +10,8 @@ from examples.steps import Select, AlwaysOK
 
 
 class BlockingStepStation(Station):
-    DISPLAY_NAME = 'station with blocking step'
-    STATION_NAME = 'blocking-step-station'
+    DISPLAY_NAME = "station with blocking step"
+    STATION_NAME = "blocking-step-station"
     STATION_ID = 1
 
     disableFileFogging = True
@@ -28,7 +28,8 @@ class BlockingStepStation(Station):
         Select.STEP_NAME,
     ]
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     Q_APP = QApplication(sys.argv)
     MainWindow(BlockingStepStation).show()
     sys.exit(Q_APP.exec_())

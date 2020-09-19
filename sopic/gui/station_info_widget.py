@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 
+
 class StationInfoWidget(QWidget):
     def __init__(self, version, parent=None):
         super().__init__(parent)

@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout,
     QApplication,
-    QSplitter
+    QSplitter,
 )
 
 from PyQt5.QtCore import Qt
@@ -19,6 +19,7 @@ from .step_selection_dialog import StepSelectionDialog
 from .station_status_widget import StationStatusWidget
 from .station_info_widget import StationInfoWidget
 from .password_dialog import PasswordDialog
+
 
 class MainWindow(QMainWindow):
     settingsDialog = None
@@ -51,7 +52,7 @@ class MainWindow(QMainWindow):
                 self.station,
                 self.station.updateValueSettings,
                 self.station.updateSettingsFile,
-                self.station.resetSettings
+                self.station.resetSettings,
             )
 
         self.stepStepDialog = StepSelectionDialog(self.station.steps)
@@ -103,7 +104,10 @@ class MainWindow(QMainWindow):
         if self.settingsDialog is not None:
             self.settingsViewerWidget = SettingsViewerWidget(self.station)
             self.settingsDialog.accepted.connect(self.settingsViewerWidget.refresh)
-        if self.station.STATION_VERSION is not None and len(self.station.STATION_VERSION) > 0:
+        if (
+            self.station.STATION_VERSION is not None
+            and len(self.station.STATION_VERSION) > 0
+        ):
             self.stationInfoWidget = StationInfoWidget(self.station.STATION_VERSION)
         self.updateLayoutDebug()
 

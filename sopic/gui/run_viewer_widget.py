@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
 
 from .step_status_widget import StepStatusWidget
 
+
 # from https://docs.python.org/3/library/itertools.html#itertools-recipes
 def grouper(iterable, chunkSize, fillValue=None):
     # Collect data into fixed-length chunks or blocks
@@ -18,6 +19,7 @@ def newHLayout(chunk):
         if widget is not None:
             hlayout.addWidget(widget)
     return hlayout
+
 
 class RunViewerWidget(QWidget):
     # Number of StepStatusWidget per lines
@@ -34,7 +36,9 @@ class RunViewerWidget(QWidget):
 
         vlayoutMain = QVBoxLayout()
 
-        for chunk in grouper(self.childs, self.LINE_CHUNK_SIZE, fillValue=StepStatusWidget('')):
+        for chunk in grouper(
+            self.childs, self.LINE_CHUNK_SIZE, fillValue=StepStatusWidget("")
+        ):
             vlayoutMain.addLayout(newHLayout(chunk))
 
         self.setLayout(vlayoutMain)

@@ -8,9 +8,10 @@ from sopic.gui import MainWindow
 
 from examples.steps import StoreData, RetrieveData, Select
 
+
 class StepDataStation(Station):
-    DISPLAY_NAME = 'step data station'
-    STATION_NAME = 'step-data-station'
+    DISPLAY_NAME = "step data station"
+    STATION_NAME = "step-data-station"
     STATION_ID = 6
 
     disableFileLogging = True
@@ -21,7 +22,8 @@ class StepDataStation(Station):
         Select,
     ]
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     Q_APP = QApplication(sys.argv)
     MainWindow(StepDataStation).show()
     sys.exit(Q_APP.exec_())

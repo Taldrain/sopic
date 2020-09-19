@@ -1,5 +1,6 @@
 from .gui import StepUI
 
+
 #
 # Step class
 #
@@ -63,10 +64,7 @@ class Step:
             logStr = logStr + " " + errorStr
         self.logger.error(logStr)
         return self.buildStepResult(
-            False,
-            terminate=terminate,
-            infoStr=errorStr,
-            errorCode=errorCode
+            False, terminate=terminate, infoStr=errorStr, errorCode=errorCode
         )
 
     def getWidget(self):

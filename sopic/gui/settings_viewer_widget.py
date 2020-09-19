@@ -1,12 +1,9 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (
-    QWidget,
-    QLabel,
-    QVBoxLayout
-)
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout
+
 
 def formatLabel(key, value):
-    return '' + key + ': ' + value
+    return "" + key + ": " + value
 
 
 class SettingsViewerWidget(QWidget):

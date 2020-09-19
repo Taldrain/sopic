@@ -1,10 +1,5 @@
-from PyQt5.QtWidgets import (
-    QDialog,
-    QGridLayout,
-    QPushButton,
-    QLabel,
-    QCheckBox
-)
+from PyQt5.QtWidgets import QDialog, QGridLayout, QPushButton, QLabel, QCheckBox
+
 
 def handleClick(step):
     def _handleClick(state):
@@ -12,9 +7,10 @@ def handleClick(step):
         # 0: unchecked
         # 1: partially checked
         # 2: checked
-        step.ACTIVATED = (state == 2)
+        step.ACTIVATED = state == 2
 
     return _handleClick
+
 
 class StepSelectionDialog(QDialog):
     def __init__(self, steps):
@@ -34,7 +30,7 @@ class StepSelectionDialog(QDialog):
         checkbox = QCheckBox()
         checkbox.setChecked(self.allStepsActivated)
         checkbox.stateChanged.connect(self.controlAllSteps)
-        layout.addWidget(QLabel('All steps'), 0, 0)
+        layout.addWidget(QLabel("All steps"), 0, 0)
         layout.addWidget(checkbox, 0, 1)
 
         for index, step in enumerate(self.steps):
@@ -49,7 +45,6 @@ class StepSelectionDialog(QDialog):
 
         self.setLayout(layout)
         self.setWindowTitle("Step selection")
-
 
     def controlAllSteps(self):
         self.allStepsActivated = not self.allStepsActivated

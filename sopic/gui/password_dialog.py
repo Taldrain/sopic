@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import (
     QLineEdit,
 )
 
+
 class PasswordDialog(QDialog):
     def __init__(self, admin_password):
         super().__init__()

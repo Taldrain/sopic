@@ -8,9 +8,10 @@ from sopic.gui import MainWindow
 
 from examples.steps import Select, AlwaysOK
 
+
 class StepSkippedStation(Station):
-    DISPLAY_NAME = 'station with step skipped on fail'
-    STATION_NAME = 'step-skipped-station'
+    DISPLAY_NAME = "station with step skipped on fail"
+    STATION_NAME = "step-skipped-station"
 
     STATION_ID = 4
 
@@ -33,7 +34,8 @@ class StepSkippedStation(Station):
         AlwaysOK.STEP_NAME,
     ]
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     Q_APP = QApplication(sys.argv)
     MainWindow(StepSkippedStation).show()
     sys.exit(Q_APP.exec_())

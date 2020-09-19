@@ -4,20 +4,25 @@ import colorlog
 
 DEFAULT_LEVEL = logging.DEBUG
 
-FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
 
 def getDefaultFormatter():
     return logging.Formatter(FORMAT)
 
-def getColorFormatter():
-    return colorlog.ColoredFormatter('%(log_color)s' + FORMAT)
 
-def getLogger(name, stationId, disableFileLogging, defaultDir, otherHandlers, disableHandlers):
-    logger = logging.getLogger(name + '[' + str(stationId) + ']')
+def getColorFormatter():
+    return colorlog.ColoredFormatter("%(log_color)s" + FORMAT)
+
+
+def getLogger(
+    name, stationId, disableFileLogging, defaultDir, otherHandlers, disableHandlers
+):
+    logger = logging.getLogger(name + "[" + str(stationId) + "]")
     logger.setLevel(DEFAULT_LEVEL)
 
     # if the logger has already been created we don't re-add the handlers
-    if (len(logger.handlers) != 0 or disableHandlers):
+    if len(logger.handlers) != 0 or disableHandlers:
         return logger
 
     # handler
@@ -27,10 +32,12 @@ def getLogger(name, stationId, disableFileLogging, defaultDir, otherHandlers, di
     if disableFileLogging is False:
         directory = os.path.expanduser(defaultDir)
         os.makedirs(directory, exist_ok=True)
-        fileHandler = logging.FileHandler(os.path.join(
-            directory,
-            ("%03d" % stationId) + '-' + name + '.log',
-        ))
+        fileHandler = logging.FileHandler(
+            os.path.join(
+                directory,
+                ("%03d" % stationId) + "-" + name + ".log",
+            )
+        )
         fileHandler.setLevel(DEFAULT_LEVEL)
 
     # add formatter to handler

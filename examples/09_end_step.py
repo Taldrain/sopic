@@ -8,9 +8,10 @@ from sopic.gui import MainWindow
 
 from examples.steps import Select, PrintSettings, EndButton, StartButton
 
+
 class EndStepStation(Station):
-    DISPLAY_NAME = 'station with end step'
-    STATION_NAME = 'end-step-station'
+    DISPLAY_NAME = "station with end step"
+    STATION_NAME = "end-step-station"
     STATION_ID = 9
 
     disableFileLogging = True
@@ -25,11 +26,11 @@ class EndStepStation(Station):
     endStep = EndButton
 
     defaultSettings = {
-        'random-settings': '42',
+        "random-settings": "42",
     }
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     Q_APP = QApplication(sys.argv)
     MainWindow(EndStepStation).show()
     sys.exit(Q_APP.exec_())

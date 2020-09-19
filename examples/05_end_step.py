@@ -8,9 +8,10 @@ from sopic.gui import MainWindow
 
 from examples.steps import Select, AlwaysOK, End
 
+
 class EndStepStation(Station):
-    DISPLAY_NAME = 'end step station'
-    STATION_NAME = 'end-step-station'
+    DISPLAY_NAME = "end step station"
+    STATION_NAME = "end-step-station"
     STATION_ID = 5
 
     disableFileLogging = True
@@ -21,7 +22,8 @@ class EndStepStation(Station):
         End,
     ]
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     Q_APP = QApplication(sys.argv)
     MainWindow(EndStepStation).show()
     sys.exit(Q_APP.exec_())

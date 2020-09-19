@@ -7,6 +7,7 @@ COLOR_OK = QColor(73, 229, 76)
 COLOR_KO = QColor(249, 72, 72)
 COLOR_SKIPPED = QColor(128, 128, 128)
 
+
 class StepStatusWidget(QWidget):
     def __init__(self, name, parent=None):
         super().__init__(parent)

@@ -8,11 +8,12 @@ from sopic.gui import MainWindow
 
 from examples.steps import Select, AlwaysOK, AlwaysKO
 
+
 class BasicStation(Station):
-    DISPLAY_NAME = 'basic station'
-    STATION_NAME = 'basic-station'
+    DISPLAY_NAME = "basic station"
+    STATION_NAME = "basic-station"
     STATION_ID = 0
-    STATION_VERSION = '0.0.1'
+    STATION_VERSION = "0.0.1"
 
     disableFileLogging = True
 
@@ -27,7 +28,8 @@ class BasicStation(Station):
         Select,
     ]
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     Q_APP = QApplication(sys.argv)
     MainWindow(BasicStation).show()
     sys.exit(Q_APP.exec_())
