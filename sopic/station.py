@@ -2,6 +2,7 @@ import os
 import json
 import time
 import datetime
+import pygraphviz as pgv
 
 from .utils import getLogger
 
@@ -422,3 +423,56 @@ class Station:
     # Check if stepName is non blocking
     def isNonBlockingStep(self, stepName):
         return stepName in self.nonBlockingSteps
+
+    def writeWorkflow(self):
+        graph = pgv.AGraph(strict=False)
+
+        # not really clear to use the index, what about the start/stop steps
+        def nodeId(index):
+            return "{}-{}".format(index, self.steps[index].STEP_NAME)
+
+        def createNode(index):
+            graph.add_node(nodeId(index), label=self.steps[index].STEP_NAME)
+
+        def createEdge(a, b, label):
+            graph.add_edge(a, b, label=label, dir="forward")
+
+        for index, step in enumerate(self.steps):
+            createNode(index)
+
+            if index > 0:
+                if (index < len(self.steps) - 1) and (
+                    step.STEP_NAME in self.stepsSkippedOnPreviousFail
+                ):
+                    createEdge(nodeId(index - 1), nodeId(index + 1), "Skip")
+                elif self.steps[index - 1].STEP_NAME in self.nonBlockingSteps:
+                    createEdge(nodeId(index - 1), nodeId(index), "KO")
+                else:
+                    createEdge(
+                        nodeId(index - 1), nodeId(len(self.steps) - 1), "Terminate"
+                    )
+
+                createEdge(nodeId(index - 1), nodeId(index), "OK")
+
+            if self.steps[index].MAX_RETRIES > 0:
+                createEdge(
+                    nodeId(index),
+                    nodeId(index),
+                    "Retries {}x".format(self.steps[index].MAX_RETRIES),
+                )
+
+        if self.startStep is not None:
+            createEdge(self.startStep.STEP_NAME, nodeId(0), "Start")
+
+        lastStepId = nodeId(len(self.steps) - 1)
+        if self.endStep is not None:
+            createEdge(lastStepId, self.endStep.STEP_NAME, "End")
+            lastStepId = self.endStep.STEP_NAME
+
+        graph.add_node("OK", style="filled", fillcolor="green")
+        graph.add_node("KO", style="filled", fillcolor="red")
+
+        createEdge(lastStepId, "KO", "")
+        createEdge(lastStepId, "OK", "")
+
+        graph.write("workflow.dot")

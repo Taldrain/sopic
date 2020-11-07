@@ -177,3 +177,6 @@ class MainWindow(QMainWindow):
         if (QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_B):
             self.debugDisplay = not self.debugDisplay
             self.updateLayoutDebug()
+
+    def writeWorkflow(self):
+        self.station.writeWorkflow()
