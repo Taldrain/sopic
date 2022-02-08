@@ -1,8 +1,7 @@
-Changelog
----------
+# Changelog
 
-# Unversioned
+## Unversioned
 
 - Minor: switch to poetry
 
-# 0.1.0
+## 0.1.0
