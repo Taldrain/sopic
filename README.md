@@ -15,7 +15,9 @@ Define a station that will run a number of steps, in sequential order.
 
 # Installation
 
-`pip install --user -e .`
+After a clone of the repository
+
+`poetry install`
 
 
 # How to use
@@ -26,7 +28,8 @@ In your station class you can set some parameters and define your list of steps.
 
 You can also define a settings dialog when initializing the `MainWindow`.
 
-Check the examples directory.
+Check the examples directory (eg: `poetry run python examples/00_basic.py`)
+
 
 # Keybinds
 
@@ -171,18 +174,6 @@ class MyStep(Step):
 
 [Check the examples directory](./examples)
 
-
-# TODO
-
-_unordered_
-
-- [ ] improve API documentation
-- [ ] proper tests
-- [ ] rework log format, they should be parseable
-- [ ] cleaner step definition (nonblocking/skipped/clean or ending step)
-- [ ] rework the main station loop, we should use a for-loop and not having to manually update the stepIndex
-- [x] ~feature to freeze the settings and steps~ locked behing an optional password
-- [ ] publish package
 
 # See also
 

@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "sopic"
+version = "0.1.0"
+description = "Helper for manufacturing station"
+authors = ["Thomas 'Taldrain' Mariaux <taldrain@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+PyQt5 = "^5"
+colorlog = "^4"
+pygraphviz = "1.8"
+
+[tool.poetry.dev-dependencies]
+black = "^22.1.0"
+pytest = "^7.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
