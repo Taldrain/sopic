@@ -1,13 +1,24 @@
-name: check-lint
+name: main
 
 on: [push]
 
 jobs:
-  black:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
+      - uses: ts-graphviz/setup-graphviz@v1
       - uses: abatilo/actions-poetry@v2.1.3
       - run: poetry install
-      - run: poetry run black --check .
+  # lint:
+  #   runs-on: ubuntu-latest
+  #   needs: [build]
+  #   - run: poetry run black --check .
+  # test:
+  #   runs-on: ubuntu-latest
+  #   needs: [build]
+  #   - run: poetry run pytest
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: [lint,test]
