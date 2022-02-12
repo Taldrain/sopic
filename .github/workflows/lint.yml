@@ -11,14 +11,24 @@ jobs:
       - uses: ts-graphviz/setup-graphviz@v1
       - uses: abatilo/actions-poetry@v2.1.3
       - run: poetry install
-  # lint:
-  #   runs-on: ubuntu-latest
-  #   needs: [build]
-  #   - run: poetry run black --check .
-  # test:
-  #   runs-on: ubuntu-latest
-  #   needs: [build]
-  #   - run: poetry run pytest
+  lint:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: ts-graphviz/setup-graphviz@v1
+      - uses: abatilo/actions-poetry@v2.1.3
+      - run: poetry run black --check .
+  test:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: ts-graphviz/setup-graphviz@v1
+      - uses: abatilo/actions-poetry@v2.1.3
+      - run: poetry run pytest
   # deploy:
   #   runs-on: ubuntu-latest
   #   needs: [lint,test]
