@@ -34,7 +34,7 @@ jobs:
       - run: curl -sSL https://install.python-poetry.org | python3 -
       - run: poetry install
       - run: poetry run pytest
-  deploy:
+  deploy_test:
     runs-on: ubuntu-latest
     environment: production
     needs: [lint,test]
