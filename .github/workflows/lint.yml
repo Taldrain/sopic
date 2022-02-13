@@ -2,26 +2,19 @@ name: main
 
 on: [push]
 
-env:
-  POETRY_VIRTUALENVS_CREATE: false
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - uses: ts-graphviz/setup-graphviz@v1
-      - run: curl -sSL https://install.python-poetry.org | python3 -
+      - uses: .github/workflows/setup-action
       - run: poetry install
   lint:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - uses: ts-graphviz/setup-graphviz@v1
-      - run: curl -sSL https://install.python-poetry.org | python3 -
+      - uses: .github/workflows/setup-action
       - run: poetry install
       - run: poetry run black --check .
   test:
@@ -29,9 +22,7 @@ jobs:
     needs: [build]
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - uses: ts-graphviz/setup-graphviz@v1
-      - run: curl -sSL https://install.python-poetry.org | python3 -
+      - uses: .github/workflows/setup-action
       - run: poetry install
       - run: poetry run pytest
   deploy_test:
@@ -41,10 +32,8 @@ jobs:
     needs: [lint,test]
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - uses: ts-graphviz/setup-graphviz@v1
-      - run: curl -sSL https://install.python-poetry.org | python3 -
-      - run: poetry install
+      - uses: .github/workflows/setup-action
       - run: poetry config repositories.feetme-nexus https://nexus.cloud.feetme.fr/repository/feetme-pypi/
+      - run: poetry install
       - run: poetry build
       - run: poetry publish -r feetme-nexus -u ${{ secrets.FEETME_NEXUS_USERNAME }} -p  ${{ secrets.FEETME_NEXUS_PASSWORD }}
