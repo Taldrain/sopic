@@ -36,6 +36,7 @@ jobs:
       - run: poetry run pytest
   deploy_test:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
     environment: production
     needs: [lint,test]
     steps:
