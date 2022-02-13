@@ -6,7 +6,7 @@ authors = ["Thomas 'Taldrain' Mariaux <taldrain@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 PyQt5 = "^5"
 colorlog = "^4"
 pygraphviz = "1.8"

@@ -11,8 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
       - uses: ts-graphviz/setup-graphviz@v1
       - run: curl -sSL https://install.python-poetry.org | python3 -
       - run: poetry install
@@ -22,8 +20,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
       - uses: ts-graphviz/setup-graphviz@v1
       - run: curl -sSL https://install.python-poetry.org | python3 -
       - run: poetry install
@@ -34,8 +30,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
       - uses: ts-graphviz/setup-graphviz@v1
       - run: curl -sSL https://install.python-poetry.org | python3 -
       - run: poetry install
