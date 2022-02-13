@@ -2,6 +2,9 @@ name: main
 
 on: [push]
 
+env:
+  POETRY_VIRTUALENVS_CREATE: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -10,7 +13,6 @@ jobs:
       - uses: actions/setup-python@v2
       - uses: ts-graphviz/setup-graphviz@v1
       - run: curl -sSL https://install.python-poetry.org | python3 -
-      - run: poetry config virtualenvs.in-project true
       - run: poetry install
   lint:
     runs-on: ubuntu-latest
@@ -20,7 +22,6 @@ jobs:
       - uses: actions/setup-python@v2
       - uses: ts-graphviz/setup-graphviz@v1
       - run: curl -sSL https://install.python-poetry.org | python3 -
-      - run: poetry config virtualenvs.in-project true
       - run: poetry run black --check .
   test:
     runs-on: ubuntu-latest
@@ -30,7 +31,6 @@ jobs:
       - uses: actions/setup-python@v2
       - uses: ts-graphviz/setup-graphviz@v1
       - run: curl -sSL https://install.python-poetry.org | python3 -
-      - run: poetry config virtualenvs.in-project true
       - run: poetry run pytest
   # deploy:
   #   runs-on: ubuntu-latest
