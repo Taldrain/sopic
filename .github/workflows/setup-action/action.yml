@@ -1,11 +1,29 @@
 name: "Setup Poetry"
 description: "Setup the poetry environment"
+inputs:
+  disable_cache:
+    description: 'Allow to disable poetry cache'
+    required: false
+    default: false
 runs:
   using: "composite"
   steps:
-    - uses: actions/setup-python@v4
     - uses: ts-graphviz/setup-graphviz@v1
-    - run: curl -sSL https://install.python-poetry.org | python3 -
-      shell: bash
-    - run: poetry config virtualenvs.in-project true
+    - uses: actions/setup-python@v4
+      id: setup-python
+      with:
+        python-version: '3.10'
+    - uses: snok/install-poetry@v1
+      with:
+        virtualenvs-in-project: true
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v3
+      if: inputs.disable_cache == 'false'
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Install dependencies
+      if: inputs.disable_cache == 'true' || steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install
       shell: bash
