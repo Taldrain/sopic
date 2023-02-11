@@ -4,6 +4,7 @@ version = "0.1.1"
 description = "Helper for manufacturing station"
 authors = ["Thomas 'Taldrain' Mariaux <taldrain@gmail.com>"]
 license = "MIT"
+repository = "https://github.com/Taldrain/sopic"
 
 [tool.poetry.dependencies]
 python = "^3.10"
