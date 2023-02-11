@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sopic"
-version = "0.1.0"
+version = "0.1.1"
 description = "Helper for manufacturing station"
 authors = ["Thomas 'Taldrain' Mariaux <taldrain@gmail.com>"]
 license = "MIT"
