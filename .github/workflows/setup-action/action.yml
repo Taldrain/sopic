@@ -3,7 +3,7 @@ description: "Setup the poetry environment"
 runs:
   using: "composite"
   steps:
-    - uses: actions/setup-python@v2
+    - uses: actions/setup-python@v4
     - uses: ts-graphviz/setup-graphviz@v1
     - run: curl -sSL https://install.python-poetry.org | python3 -
       shell: bash

@@ -1,5 +1,5 @@
-FeetMe Sopic
-============
+Sopic
+======
 
 Helper library for a test station in a production line.
 
