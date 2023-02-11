@@ -3,9 +3,14 @@ description: "Setup the poetry environment"
 runs:
   using: "composite"
   steps:
-    - uses: actions/setup-python@v4
+    - uses: actions/checkout@v3
     - uses: ts-graphviz/setup-graphviz@v1
-    - run: curl -sSL https://install.python-poetry.org | python3 -
-      shell: bash
-    - run: poetry config virtualenvs.in-project true
-      shell: bash
+    - uses: actions/setup-python@v4
+      id: python-cache
+      with:
+        python-version: '3.10'
+        cache: 'poetry'
+    - uses: snok/install-poetry@v1
+    - name: Install dependencies
+      if: steps.python-cache.outputs.cache-hit != 'true'
+      run: poetry install
