@@ -3,7 +3,6 @@ description: "Setup the poetry environment"
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v3
     - uses: ts-graphviz/setup-graphviz@v1
     - uses: actions/setup-python@v4
       id: python-cache
