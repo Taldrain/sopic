@@ -12,6 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/workflows/setup-action
+        with:
+          disable_cache: true
       - run: poetry install --without dev
       - run: poetry build
       - run: poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
