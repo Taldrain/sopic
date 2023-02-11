@@ -13,3 +13,4 @@ runs:
     - name: Install dependencies
       if: steps.python-cache.outputs.cache-hit != 'true'
       run: poetry install
+      shell: bash
