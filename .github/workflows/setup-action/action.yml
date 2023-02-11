@@ -19,11 +19,10 @@ runs:
     - name: Load cached venv
       id: cached-poetry-dependencies
       uses: actions/cache@v3
-      if: inputs.disable_cache == false
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
     - name: Install dependencies
-      if: inputs.disable_cache == true || steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install
       shell: bash
