@@ -1,4 +1,4 @@
-name: build, lint, test
+name: lint, test
 
 on:
   push
@@ -9,8 +9,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/workflows/setup-action
-        with:
-          disable_cache: false
       - run: poetry run black --check .
   test:
     runs-on: ubuntu-latest
