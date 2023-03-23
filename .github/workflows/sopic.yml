@@ -1,0 +1,32 @@
+name: sopic
+
+on:
+  push
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/workflows/setup-action
+      - run: poetry run black --check .
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/workflows/setup-action
+      - run: poetry run pytest
+  deploy:
+    if: ${{ github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-latest
+    environment: production
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/workflows/setup-action
+        with:
+          disable_cache: true
+      - run: poetry install --without dev
+      - run: poetry build
+      - run: poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+      - run: poetry publish
