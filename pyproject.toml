@@ -1,18 +1,18 @@
 [tool.poetry]
 name = "sopic"
-version = "0.1.1"
+version = "1.0.0"
 description = "Helper for manufacturing station"
 authors = ["Thomas 'Taldrain' Mariaux <taldrain@gmail.com>"]
 license = "MIT"
 repository = "https://github.com/Taldrain/sopic"
 
 [tool.poetry.dependencies]
-python = "^3.10"
-PyQt5 = "^5"
+python = ">=3.10,<3.12"
 colorlog = "^4"
-pygraphviz = "1.8"
+graphviz = "^0.20.1"
+pyside6 = "^6.4.3"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 black = "^22.12.0"
 pytest = "^7.2.1"
 

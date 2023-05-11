@@ -4,11 +4,13 @@ from sopic.step import Step
 class PrintSettings(Step):
     STEP_NAME = "print-settings"
 
-    def start(self, stepsData):
+    def start(self, ctx, settings, *kwargs):
         super().start()
 
-        self.logger.info(
-            "Random settings: {}".format(stepsData["__settings"]["random-settings"])
-        )
+        print("settings: ", settings)
+        # TODO: use logger
+        # self.logger.info(
+        #     "Random settings: {}".format(stepsData["__settings"]["random-settings"])
+        # )
 
         return self.OK()

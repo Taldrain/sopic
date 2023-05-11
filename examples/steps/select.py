@@ -1,6 +1,7 @@
 import threading
-from PyQt5.QtWidgets import QPushButton, QHBoxLayout
-from PyQt5.QtCore import pyqtSlot
+
+from PySide6.QtWidgets import QPushButton, QHBoxLayout
+from PySide6.QtCore import Slot
 
 from sopic.step import Step
 from sopic.gui import StepUI
@@ -12,9 +13,9 @@ IS_OK = True
 
 
 class SelectUI(StepUI):
-    def __init__(self, parent=None, event=None):
-        super().__init__(parent)
-        self.event = event
+    def __init__(self, event):
+        super().__init__()
+        self._event = event
 
         buttonOK = QPushButton("OK")
         buttonOK.clicked.connect(self.handleClickOK)
@@ -28,37 +29,37 @@ class SelectUI(StepUI):
 
         self.setLayout(htoplayout)
 
-    @pyqtSlot()
+    @Slot()
     def handleClickOK(self):
         global IS_OK
         IS_OK = True
-        self.event.set()
+        self._event.set()
 
-    @pyqtSlot()
+    @Slot()
     def handleClickKO(self):
         global IS_OK
         IS_OK = False
-        self.event.set()
+        self._event.set()
 
 
 class Select(Step):
     STEP_NAME = "button-select"
-    event = threading.Event()
+    _event = threading.Event()
 
-    def start(self, _stepsData):
+    def start(self, *kwargs):
         super().start()
 
-        self.event.wait()
-        self.event.clear()
+        self._event.wait()
+        self._event.clear()
 
         global IS_OK
         if IS_OK:
-            return self.OK()
+            return self.OK(self.get_step_key('ok'))
 
-        return self.KO()
+        return self.KO(self.get_step_key('ko'))
 
     def getWidget(self):
         if self.widget is None:
-            self.widget = SelectUI(event=self.event)
+            self.widget = SelectUI(self._event)
 
         return self.widget

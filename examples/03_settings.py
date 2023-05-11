@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 import sys
-from PyQt5.QtWidgets import QLabel, QLineEdit, QApplication
+from PySide6 import QtWidgets
 
 from sopic.station import Station
-from sopic.gui import MainWindow, MainSettingsDialog
+from sopic.gui import MainWindow
 
-from examples.steps import Select, PrintSettings
+from examples.steps import Select, PrintSettings, GetSettings
 
 
 class SettingsStation(Station):
@@ -14,42 +14,23 @@ class SettingsStation(Station):
     STATION_NAME = "settings-station"
     STATION_ID = 3
 
-    disableFileLogging = True
+    DEBUG = True
 
-    steps = [
-        Select,
-        PrintSettings,
-        Select,
-    ]
+    dag = {
+        'start': (Select, {'ok': 'print', 'ko': 'end'}),
+        'print': (PrintSettings, ['get']),
+        'get': (GetSettings, ['end']),
+        'end': (Select, []),
+    }
 
-    defaultSettings = {
-        "random-settings": "42",
+    default_settings = {
+        "random-settings": { "value": 42, "label": "A random settings" },
+        "read-only": { "value": 12, "label": "Read-only settings", "edit": False },
+        "no-label": { "value": "hello" },
     }
 
 
-class SettingsDialog(MainSettingsDialog):
-    textWidget = None
-
-    # Required
-    # Initialize the gui
-    def initUI(self):
-        self.textWidget = QLineEdit()
-        self.textWidget.textChanged.connect(self.handleText)
-
-        self.widgets = [
-            [QLabel("Random setting: "), self.textWidget],
-        ]
-
-    # Required
-    # Reset the fields with the data from `self.settings`
-    def initValues(self):
-        self.textWidget.setText(self.settings["random-settings"])
-
-    def handleText(self):
-        self.cbUpdateSettings("random-settings", self.textWidget.text())
-
-
 if __name__ == "__main__":
-    Q_APP = QApplication(sys.argv)
-    MainWindow(SettingsStation, SettingsDialog).show()
-    sys.exit(Q_APP.exec_())
+    app = QtWidgets.QApplication([])
+    MainWindow(SettingsStation).show()
+    sys.exit(app.exec())

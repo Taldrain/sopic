@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-from PyQt5.QtWidgets import QApplication
+from PySide6 import QtWidgets
 
 from sopic.station import Station
 from sopic.gui import MainWindow
@@ -10,26 +10,24 @@ from examples.steps import Select, AlwaysOK, AlwaysKO
 
 
 class BasicStation(Station):
-    DISPLAY_NAME = "basic station"
-    STATION_NAME = "basic-station"
+    STATION_NAME = "basic station"
     STATION_ID = 0
-    STATION_VERSION = "0.0.1"
+    STATION_VERSION = "0.0.2"
 
-    disableFileLogging = True
+    DEBUG = True
 
-    steps = [
-        Select,
-        AlwaysOK,
-        # This step will always return KO,
-        # the next step will always be skipped
-        AlwaysKO,
-        # Never called
-        Select,
-        Select,
-    ]
+    dag = {
+        # will allow to either go to `foo` or `bar`
+        'start': (Select, {'ok': 'foo', 'ko': 'bar'}),
+        'foo': (AlwaysOK, ['end']),
+        'bar': (AlwaysKO, ['end']),
+        'end': (Select, []),
+    }
+
+    start_step_key = 'start'
 
 
 if __name__ == "__main__":
-    Q_APP = QApplication(sys.argv)
+    app = QtWidgets.QApplication([])
     MainWindow(BasicStation).show()
-    sys.exit(Q_APP.exec_())
+    sys.exit(app.exec())

@@ -1,5 +1,5 @@
 from sopic.gui import (
-    MainSettingsDialog,
+    # MainSettingsDialog,
     MainWindow,
     StepUI,
 )

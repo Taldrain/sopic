@@ -1,19 +1,15 @@
-from PyQt5.QtWidgets import (
-    QLabel,
-    QHBoxLayout,
-    QWidget,
-)
-from PyQt5.QtCore import Qt
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel
+from PySide6.QtCore import Qt
 
 
 class StationInfoWidget(QWidget):
-    def __init__(self, version, parent=None):
-        super().__init__(parent)
+    def __init__(self, version):
+        super().__init__()
 
-        versionLabel = QLabel("Version: " + version)
-        versionLabel.setAlignment(Qt.AlignRight)
+        version_label = QLabel("Version: " + version)
+        version_label.setAlignment(Qt.AlignRight)
 
-        hlayout = QHBoxLayout()
-        hlayout.addWidget(versionLabel)
+        layout = QHBoxLayout()
+        layout.addWidget(version_label)
 
-        self.setLayout(hlayout)
+        self.setLayout(layout)
