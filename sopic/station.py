@@ -5,7 +5,7 @@ from datetime import datetime
 from types import MappingProxyType
 from copy import deepcopy
 
-from sopic.dag import is_valid_dag, graph_to_dot
+from sopic.utils.dag import is_valid_dag, graph_to_dot
 from sopic.utils.settings import overwrite_settings_values, step_settings
 
 

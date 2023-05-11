@@ -1,4 +1,4 @@
-from sopic.dag import is_valid_dag
+from sopic.utils.dag import is_valid_dag
 
 
 def test_is_valid_dag():
