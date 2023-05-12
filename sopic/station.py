@@ -26,7 +26,7 @@ class Station:
 
     # default settings that will be overwritten by the values from the settings
     # file
-    default_settings = []
+    default_settings = {}
 
     # settings of the station
     _settings = {}
@@ -178,7 +178,7 @@ class Station:
                     MappingProxyType(self._run_info)
                 )
             except Exception as e:
-                print('error:')
+                print('step uncatch error:')
                 print(e)
                 step_result = step.buildStepResult(False, infoStr=str(e), errorCode=-1)
                 # TODO: custom `step_result`

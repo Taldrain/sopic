@@ -7,6 +7,11 @@ def list_childs(childs):
         return childs
     return list(childs.values())
 
+def list_childs_items(childs):
+    if type(childs) is list:
+        return ((i, i) for i in childs)
+    return list(childs.items())
+
 
 def list_steps(graph):
     steps = set()
@@ -53,8 +58,8 @@ def graph_to_dot(graph, start_step, station_name):
     steps = list_steps(graph)
     for step in steps:
         if step in graph:
-            for neighbor in list_childs(graph[step][1]):
-                dot.edge(step, neighbor)
+            for label, neighbor in list_childs_items(graph[step][1]):
+                dot.edge(step, neighbor, label=label)
     dot.node(start_step, style="filled", fillcolor="green")
 
     dot.render(f"dag-{station_name}", cleanup=True)

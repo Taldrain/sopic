@@ -10,9 +10,9 @@ from examples.steps import Select, PrintSettings, GetSettings
 
 
 class SettingsStation(Station):
-    DISPLAY_NAME = "station with settings"
     STATION_NAME = "settings-station"
     STATION_ID = 3
+    STATION_VERSION = "0.0.1"
 
     DEBUG = True
 
