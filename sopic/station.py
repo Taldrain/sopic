@@ -180,10 +180,15 @@ class Station:
             except Exception as e:
                 print('step uncatch error:')
                 print(e)
-                step_result = step.buildStepResult(False, infoStr=str(e), errorCode=-1)
+                print('step.childs: ', step._childs)
+                step_result = step.buildStepResult(
+                    False,
+                    next_step_key=step.get_step_key('_err'),
+                    infoStr=str(e),
+                    errorCode=-1,
+                )
                 # TODO: custom `step_result`
                 # Catch any non-catched exception with a default errorCode
-                # TODO: go to the last step? - Should we have an end/catch all step?
 
             print('step_result: ', step_result)
             next_step_key = step_result["nextStepKey"]

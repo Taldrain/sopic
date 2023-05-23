@@ -7,7 +7,7 @@ class Retry(Step):
     STEP_NAME = "retry"
     MAX_RETRIES = 3
 
-    def start(self, _stepsData):
+    def start(self, *kwargs):
         super().start()
 
         if randint(0, 4) != 0:

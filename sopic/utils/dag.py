@@ -60,6 +60,13 @@ def graph_to_dot(graph, start_step, station_name):
         if step in graph:
             for label, neighbor in list_childs_items(graph[step][1]):
                 dot.edge(step, neighbor, label=label)
+            if graph[step][0].MAX_RETRIES > 0:
+                dot.edge(
+                    step,
+                    step,
+                    label=str(graph[step][0].MAX_RETRIES),
+                    style="dashed",
+                )
     dot.node(start_step, style="filled", fillcolor="green")
 
     dot.render(f"dag-{station_name}", cleanup=True)

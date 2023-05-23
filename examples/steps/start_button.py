@@ -1,17 +1,18 @@
 import threading
-from PyQt5.QtWidgets import QPushButton, QHBoxLayout
-from PyQt5.QtCore import pyqtSlot
+
+from PySide6.QtWidgets import QPushButton, QHBoxLayout
+from PySide6.QtCore import Slot
 
 from sopic.step import Step
 from sopic.gui import StepUI
 
 
 class StartButtonUI(StepUI):
-    def __init__(self, parent=None, event=None):
-        super().__init__(parent)
-        self.event = event
+    def __init__(self, event):
+        super().__init__()
+        self._event = event
 
-        btn = QPushButton("OK")
+        btn = QPushButton("Start")
         btn.clicked.connect(self.handleClick)
 
         htoplayout = QHBoxLayout()
@@ -19,25 +20,25 @@ class StartButtonUI(StepUI):
 
         self.setLayout(htoplayout)
 
-    @pyqtSlot()
+    @Slot()
     def handleClick(self):
-        self.event.set()
+        self._event.set()
 
 
 class StartButton(Step):
     STEP_NAME = "start-button"
-    event = threading.Event()
+    _event = threading.Event()
 
-    def start(self, _stepsData):
+    def start(self, *kwargs):
         super().start()
 
-        self.event.wait()
-        self.event.clear()
+        self._event.wait()
+        self._event.clear()
 
         return self.OK()
 
     def getWidget(self):
         if self.widget is None:
-            self.widget = StartButtonUI(event=self.event)
+            self.widget = StartButtonUI(event=self._event)
 
         return self.widget

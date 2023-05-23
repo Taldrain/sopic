@@ -12,8 +12,6 @@ class Step:
     widget = None
     _childs = []
 
-    # XXX: We could remove stationName and stationID and force the use of
-    # stepsData to retrieve them.
     def __init__(self, childs, logger):
         self._childs = childs
         self.logger = logger

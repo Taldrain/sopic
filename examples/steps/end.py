@@ -4,25 +4,10 @@ from sopic.step import Step
 class End(Step):
     STEP_NAME = "end-step"
 
-    def start(self, stepsData):
+    def start(self, ctx, settings, run_info):
         super().start()
 
-        self.logger.info(
-            "Has current run failed: {}".format(
-                "lastFailedStep" in stepsData["__status"]
-            )
-        )
-
-        # Note that the current run is still in progress
-        self.logger.info(
-            "Number of consecutive failed: {}".format(
-                stepsData["__run"]["consecutive_failed"]
-            )
-        )
-        self.logger.info(
-            "Number of failed run / Number of run: {}/{}".format(
-                stepsData["__run"]["nb_failed"], stepsData["__run"]["nb_run"]
-            )
-        )
+        # TODO switch to logger
+        print(f"The run {'succeded' if run_info['run']['last_failed_step'] is None else 'failed'}")
 
         return self.OK()
