@@ -7,10 +7,6 @@ class PrintSettings(Step):
     def start(self, ctx, settings, *kwargs):
         super().start()
 
-        print("settings: ", settings)
-        # TODO: use logger
-        # self.logger.info(
-        #     "Random settings: {}".format(stepsData["__settings"]["random-settings"])
-        # )
+        self.logger.info(f"Settings of the station: {settings}")
 
         return self.OK()

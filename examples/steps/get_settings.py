@@ -7,7 +7,6 @@ class GetSettings(Step):
     def start(self, ctx, settings, *kwargs):
         super().start()
 
-        print(f"{settings['random-settings']=}")
-        # TODO: use logger
+        self.logger.info(f"{settings['random-settings']=}")
 
         return self.OK()

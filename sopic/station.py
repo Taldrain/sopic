@@ -7,6 +7,7 @@ from copy import deepcopy
 
 from sopic.utils.dag import is_valid_dag, graph_to_dot
 from sopic.utils.settings import overwrite_settings_values, step_settings
+from sopic.utils.logger import init_station_logger, get_step_logger
 
 
 class Station:
@@ -24,6 +25,12 @@ class Station:
     # path to settings file
     default_settings_dir = "~/.sopic/settings/"
 
+    # path to logs file
+    default_log_dir = "~/.sopic/logs/"
+
+    # should the log to file be disabled
+    disable_file_logging = False
+
     # default settings that will be overwritten by the values from the settings
     # file
     default_settings = {}
@@ -35,9 +42,16 @@ class Station:
     admin_password = None
 
     def __init__(self, next_step_handlerUI, end_run_handlerUI):
+        self.logger = init_station_logger(
+            self.STATION_NAME,
+            self.STATION_ID,
+            self.default_log_dir,
+            self.disable_file_logging,
+        )
+
         if self.start_step_key is None:
-            # TODO: add warning log
             self.start_step_key = list(self.dag.keys())[0]
+            self.logger.warning(f"`start_step_key` is not defined, defaulting to `{self.start_step_key}` as first step")
 
         self._next_step_handlerUI = next_step_handlerUI
         self._end_run_handlerUI = end_run_handlerUI
@@ -59,8 +73,13 @@ class Station:
     # init each step class with proper parameters
     def _init_steps(self):
         for key, (step, childs) in self.dag.items():
+            step_logger = get_step_logger(
+                self.STATION_NAME,
+                self.STATION_ID,
+                step.STEP_NAME,
+            )
             self.dag[key] = (
-                step(childs, None),  # self.logger,
+                step(childs, step_logger),
                 childs,
             )
 
@@ -81,8 +100,10 @@ class Station:
                     self._settings,
                     json.load(data),
                 )
-        except Exception:
-            # TODO add error logging
+        except FileNotFoundError:
+            self.logger.debug("No settings file have been found")
+        except Exception as e:
+            self.logger.error(f"Error while trying to load the settings: {repr(e)}")
             return
 
     # handler to return the settings, used by the settigns dialog
@@ -94,8 +115,8 @@ class Station:
     def _reset_settings_handler(self):
         try:
             os.remove(self._get_settings_file_path())
-        except OSError:
-            # TODO logger
+        except Exception as e:
+            self.logger.error(f"Error while trying to delete previous settings file: {repr(e)}")
             pass
         self._load_settings()
 
@@ -142,15 +163,13 @@ class Station:
     def start(self):
         while True:
             self._run_info = self._reset_run_info()
-            print('----- start run')
             self.start_run_handler()
             is_success = self._run()
             self.end_run_handler(is_success)
-            print('----- end run')
 
     def start_run_handler(self):
+        self.logger.debug("Starting a run")
         self._run_info["run"]["start_date"] = datetime.utcnow()
-        # TODO: logging
 
     def _run(self):
         is_success_run = True
@@ -161,13 +180,11 @@ class Station:
 
         # while the current step has child, we continue the run
         while step_key in self.dag.keys():
-            print(f'[{step_key}]')
             (step, childs) = self.dag[step_key]
 
             self._next_step_handlerUI(step)
 
             try:
-                # TODO
                 # Run the step
                 step_result = step.start(
                     context,
@@ -178,19 +195,16 @@ class Station:
                     MappingProxyType(self._run_info)
                 )
             except Exception as e:
-                print('step uncatch error:')
-                print(e)
-                print('step.childs: ', step._childs)
+                self.logger.error(f"Exception not match in step {step.STEP_NAME}: {repr(e)}")
+                # Catch any non-catched exception with a default error_code
                 step_result = step.buildStepResult(
                     False,
                     next_step_key=step.get_step_key('_err'),
-                    infoStr=str(e),
-                    errorCode=-1,
+                    info_str=repr(e),
+                    error_code=-1,
                 )
-                # TODO: custom `step_result`
-                # Catch any non-catched exception with a default errorCode
 
-            print('step_result: ', step_result)
+            self.logger.debug(f"Step result: {repr(step_result)}")
             next_step_key = step_result["nextStepKey"]
 
             if len(childs) != 0:
@@ -210,11 +224,10 @@ class Station:
                 if next_step_key not in self.dag.keys():
                     raise Exception(f"Step {next_step_key} is not a child of step {step_key}")
 
-            print('next_step_key: ', next_step_key)
+            self.logger.debug(f"Next step key: {next_step_key}")
 
             # The step has passed
             if step_result["isSuccess"]:
-                # TODO: logging
                 step.end()
                 number_retries = 0
                 step_key = next_step_key
@@ -225,10 +238,10 @@ class Station:
             # If the step has not reach its max number of retries,
             # we will relaunch the same step on the next loop iteration
             if step.MAX_RETRIES != 0 and number_retries < step.MAX_RETRIES:
-                # TODO: logging
+                step.end()
                 number_retries += 1
                 next_step_key = step_key
-                step.end()
+                self.logger.info(f"Retry step: {number_retries}/{step.MAX_RETRIES}")
                 # give a little bit of time before restarting the same step
                 # we could use an incremental timer, or remove it completly
                 time.sleep(0.5)
@@ -250,7 +263,6 @@ class Station:
                         "infoStr": step_result["infoStr"],
                     }
                 )
-            # TODO: logging
             step.end()
             step_key = next_step_key
         return is_success_run
@@ -271,8 +283,7 @@ class Station:
             self._run_info["run"]["start_date"],
             self._run_info["run"]["consecutive_failed"]
         )
-
-        # TODO: logging
+        self.logger.debug("Ending a run")
 
     def get_steps(self):
         return [i[0] for i in self.dag.values()]

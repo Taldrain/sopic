@@ -7,7 +7,6 @@ class End(Step):
     def start(self, ctx, settings, run_info):
         super().start()
 
-        # TODO switch to logger
-        print(f"The run {'succeded' if run_info['run']['last_failed_step'] is None else 'failed'}")
+        self.logger.info(f"The run {'succeded' if run_info['run']['last_failed_step'] is None else 'failed'}")
 
         return self.OK()

@@ -5,9 +5,9 @@ from .gui import StepUI
 # Step class
 #
 class Step:
+    STEP_NAME = ""
     # Useful for flaky tests
     MAX_RETRIES = 0
-    STEP_NAME = ""
 
     widget = None
     _childs = []
@@ -26,48 +26,54 @@ class Step:
 
     # Called when the step starts
     def start(self):
-        print(f'== [{self.STEP_NAME}] start')
-
-        # self.logger.debug("Starting step " + self.STEP_NAME)
-
+        self.logger.debug("Starting step")
         self.widget.clean()
 
     # Called when the step ends
     def end(self):
-        print(f'== [{self.STEP_NAME}] end')
-        # self.logger.debug("Ending step " + self.STEP_NAME)
+        self.logger.debug("Ending step")
 
-    def buildStepResult(self, is_success, next_step_key=None, infoStr=None, errorCode=None):
+    def buildStepResult(
+            self,
+            is_success,
+            next_step_key=None,
+            info_str=None,
+            error_code=None,
+        ):
         return {
             "isSuccess": is_success,
-            "infoStr": infoStr,
-            "errorCode": errorCode,
+            "infoStr": info_str,
+            "errorCode": error_code,
             "nextStepKey": next_step_key,
         }
 
     # The step has passed
     # stepData store data to be available for next steps
-    def OK(self, next_step_key=None, successStr=""):
-        logStr = "OK step [" + self.STEP_NAME + "]"
-        if len(successStr) > 0:
-            logStr = logStr + " " + successStr
-        # self.logger.info(logStr)
-        return self.buildStepResult(True, next_step_key=next_step_key, infoStr=successStr)
+    def OK(self, next_step_key=None, info_str=""):
+        log_str = "Step OK"
+        if len(info_str) > 0:
+            log_str += f" {info_str}"
+        self.logger.info(log_str)
+        return self.buildStepResult(
+            True,
+            next_step_key=next_step_key,
+            info_str=info_str,
+        )
 
     # The step has failed
     # stepData store data to be available for next steps
-    # errorStr store string about the step error
-    # errorCode store error code about the step error
-    def KO(self, next_step_key=None, errorStr="", errorCode=None):
-        logStr = "KO step [" + self.STEP_NAME + "]"
-        if len(errorStr) > 0:
-            logStr = logStr + " " + errorStr
-        # self.logger.error(logStr)
+    # info_str store string about the step error
+    # error_code store error code about the step error
+    def KO(self, next_step_key=None, info_str="", error_code=None):
+        log_str = "Step KO"
+        if len(info_str) > 0:
+            log_str += f" {info_str}"
+        self.logger.error(log_str)
         return self.buildStepResult(
             False,
             next_step_key=next_step_key,
-            infoStr=errorStr,
-            errorCode=errorCode
+            info_str=info_str,
+            error_code=error_code,
         )
 
     def getWidget(self):

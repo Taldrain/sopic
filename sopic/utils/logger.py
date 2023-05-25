@@ -3,54 +3,39 @@ import logging
 import colorlog
 
 DEFAULT_LEVEL = logging.DEBUG
+FORMAT = "[%(levelname)s] %(asctime)s (%(name)s) %(message)s"
 
-FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-
-
-def getDefaultFormatter():
+def _default_formatter():
     return logging.Formatter(FORMAT)
 
+def _colored_formatter():
+    return colorlog.ColoredFormatter(f"%(log_color)s{FORMAT}")
 
-def getColorFormatter():
-    return colorlog.ColoredFormatter("%(log_color)s" + FORMAT)
+def _station_logger_name(name, id):
+    return f"{id:03}-{name}"
 
-
-def getLogger(
-    name, stationId, disableFileLogging, defaultDir, otherHandlers, disableHandlers
-):
-    logger = logging.getLogger(name + "[" + str(stationId) + "]")
+def init_station_logger(station_name, station_id, log_dir, disable_file_logging):
+    station_logger_name = _station_logger_name(station_name, station_id)
+    logger = logging.getLogger(station_logger_name)
     logger.setLevel(DEFAULT_LEVEL)
 
-    # if the logger has already been created we don't re-add the handlers
-    if len(logger.handlers) != 0 or disableHandlers:
-        return logger
+    # console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(DEFAULT_LEVEL)
+    console_handler.setFormatter(_colored_formatter())
+    logger.addHandler(console_handler)
 
-    # handler
-    consoleHandler = logging.StreamHandler()
-    consoleHandler.setLevel(DEFAULT_LEVEL)
-
-    if disableFileLogging is False:
-        directory = os.path.expanduser(defaultDir)
+    # file handler
+    if disable_file_logging is False:
+        directory = os.path.expanduser(log_dir)
         os.makedirs(directory, exist_ok=True)
-        fileHandler = logging.FileHandler(
-            os.path.join(
-                directory,
-                ("%03d" % stationId) + "-" + name + ".log",
-            )
-        )
-        fileHandler.setLevel(DEFAULT_LEVEL)
-
-    # add formatter to handler
-    consoleHandler.setFormatter(getColorFormatter())
-    if disableFileLogging is False:
-        fileHandler.setFormatter(getDefaultFormatter())
-
-    # add handler to logger
-    logger.addHandler(consoleHandler)
-    if disableFileLogging is False:
-        logger.addHandler(fileHandler)
-
-    for handler in otherHandlers:
-        logger.addHandler(handler)
+        file_handler = logging.FileHandler(
+            os.path.join(directory, f"{station_logger_name}.log"))
+        file_handler.setLevel(DEFAULT_LEVEL)
+        file_handler.setFormatter(_default_formatter())
+        logger.addHandler(file_handler)
 
     return logger
+
+def get_step_logger(station_name, station_id, step_name):
+    return logging.getLogger(f"{_station_logger_name(station_name, station_id)}.{step_name}")

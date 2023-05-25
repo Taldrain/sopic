@@ -7,7 +7,6 @@ class RetrieveData(Step):
     def start(self, ctx, *kwargs):
         super().start()
 
-        # TODO: use logger
-        print(f'{ctx["foo"]=}')
+        self.logger.info(f'{ctx["foo"]=}')
 
         return self.OK()
