@@ -1,6 +1,6 @@
 from .station_status_widget import StationStatusWidget
 from .station_info_widget import StationInfoWidget
-# from .logger_widget import LoggerWidget
+from .logger_widget import LoggerWidget
 from .steps_viewer_widget import StepsViewerWidget
 # from .step_status_widget import StepStatusWidget
 # from .run_viewer_widget import RunViewerWidget

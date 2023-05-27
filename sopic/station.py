@@ -42,12 +42,21 @@ class Station:
     admin_password = None
 
     def __init__(self, next_step_handlerUI, end_run_handlerUI):
+        if len(self.STATION_NAME) == 0:
+            raise NameError("STATION_NAME should be defined")
+
         self.logger = init_station_logger(
             self.STATION_NAME,
             self.STATION_ID,
             self.default_log_dir,
             self.disable_file_logging,
         )
+
+        if '.' in self.STATION_NAME:
+            # Using a '.' might results in an incorrect display of the logs in
+            # the logger widget. Only this handler parses and modifies the
+            # logger name. See `WidgetFormatter` in the `utils/logger.py` file
+            self.logger.warn("It is recommended to not use a '.' in the STATION_NAME")
 
         if self.start_step_key is None:
             self.start_step_key = list(self.dag.keys())[0]
@@ -168,7 +177,7 @@ class Station:
             self.end_run_handler(is_success)
 
     def start_run_handler(self):
-        self.logger.debug("Starting a run")
+        self.logger.debug("Starting the run")
         self._run_info["run"]["start_date"] = datetime.utcnow()
 
     def _run(self):
@@ -283,7 +292,11 @@ class Station:
             self._run_info["run"]["start_date"],
             self._run_info["run"]["consecutive_failed"]
         )
-        self.logger.debug("Ending a run")
+        if (is_success):
+            self.logger.info("The run succeeded")
+        else:
+            self.logger.warn("The run failed")
+        self.logger.debug("Ending the run")
 
     def get_steps(self):
         return [i[0] for i in self.dag.values()]

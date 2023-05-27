@@ -30,8 +30,8 @@ from .station_status_widget import StationStatusWidget
 from .station_info_widget import StationInfoWidget
 from .steps_viewer_widget import StepsViewerWidget
 from .settings_dialog_widget import SettingsDialogWidget
+from .logger_widget import LoggerWidget
 # from .password_dialog import PasswordDialog
-
 
 class MainWindow(QMainWindow):
     _station = None
@@ -45,6 +45,7 @@ class MainWindow(QMainWindow):
     # _settings_viewer_widget = None
     _steps_viewer_widget = None
     _settings_dialog_widget = None
+    _logger_widget = None
 
     # passwordDialog = None
     # splitter = None
@@ -90,8 +91,8 @@ class MainWindow(QMainWindow):
 
     def _init_widgets(self):
         # TODO: logger
-        # self.loggerWidget = LoggerWidget()
-        # self.station.logger.addHandler(self.loggerWidget)
+        self._logger_widget = LoggerWidget()
+        self._station.logger.addHandler(self._logger_widget)
 
         self._splitter_widget = QSplitter()
         self._station_status_widget = StationStatusWidget()
@@ -131,7 +132,8 @@ class MainWindow(QMainWindow):
         v_layout_main.addWidget(self._station_status_widget)
 
         self._splitter_widget.addWidget(self._steps_viewer_widget)
-        # self._splitter_widget.addWidget(self.loggerWidget)
+        self._splitter_widget.addWidget(self._logger_widget)
+        self._splitter_widget.addWidget(self._logger_widget)
 
         h_layout_child.addWidget(self._splitter_widget)
 
@@ -149,13 +151,12 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(self._station.STATION_NAME)
 
     def _update_layout_debug(self):
-        return None
-        # if self._debug_display:
-        #     # self.loggerWidget.show()
-        #     if self._settings_dialog is not None:
-        #         self._settings_viewer_widget.show()
-        # else:
-        #     # self.loggerWidget.hide()
+        if self._debug_display:
+            self._logger_widget.show()
+            # if self._settings_dialog is not None:
+            #     self._settings_viewer_widget.show()
+        else:
+            self._logger_widget.hide()
         #     if self._settings_dialog is not None:
         #         self._settings_viewer_widget.hide()
 

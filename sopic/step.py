@@ -13,6 +13,15 @@ class Step:
     _childs = []
 
     def __init__(self, childs, logger):
+        if len(self.STEP_NAME) == 0:
+            raise NameError("STEP_NAME should be defined")
+
+        if '.' in self.STEP_NAME:
+            # Using a '.' might results in an incorrect display of the logs in
+            # the logger widget. Only this handler parses and modifies the
+            # logger name. See `WidgetFormatter` in the `utils/logger.py` file
+            logger.warn("It is recommended to not use '.' in the STEP_NAME")
+
         self._childs = childs
         self.logger = logger
 
