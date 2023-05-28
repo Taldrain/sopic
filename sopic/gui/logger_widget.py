@@ -1,6 +1,7 @@
+import re
 import logging
 
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QTextEdit
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QComboBox
 from PySide6.QtCore import Signal, Slot, QObject
 from PySide6.QtGui import QPalette, QColor, QFont
 
@@ -17,28 +18,43 @@ class LoggerWidget(QWidget, logging.Handler):
         QWidget.__init__(self)
         logging.Handler.__init__(self)
 
-        self.text_widget = self._init_widgets()
+        self._logs = []
+
+        self._text_widget, self._level_widget = self._init_widgets()
         self._signal_wrapper.signal.connect(self.on_log)
         self._init_handler()
 
     def _init_widgets(self):
         layout = QVBoxLayout()
 
-        logger = QTextEdit()
-        logger.setReadOnly(True)
+        # text widget
+        text_widget = QTextEdit()
+        text_widget.setReadOnly(True)
         # set background to black
-        palette = logger.palette()
+        palette = text_widget.palette()
         palette.setColor(QPalette.Base, QColor(0, 0, 0))
-        logger.setPalette(palette)
+        text_widget.setPalette(palette)
         # increase font size
         font = QFont()
         font.setPointSize(12)
-        logger.setFont(font)
+        text_widget.setFont(font)
 
-        layout.addWidget(logger)
+        # log level widget
+        level_widget = QComboBox()
+        level_widget.addItem("DEBUG", userData=logging.DEBUG)
+        level_widget.addItem("INFO", userData=logging.INFO)
+        level_widget.addItem("WARNING", userData=logging.WARNING)
+        level_widget.addItem("ERROR", userData=logging.ERROR)
+        level_widget.addItem("CRITICAL", userData=logging.CRITICAL)
+
+        level_widget.setCurrentIndex(0)
+        level_widget.currentIndexChanged.connect(self._handle_level_filter)
+
+        layout.addWidget(text_widget)
+        layout.addWidget(level_widget)
         self.setLayout(layout)
 
-        return logger
+        return text_widget, level_widget
 
     def _init_handler(self):
         self.setLevel(logging.DEBUG)
@@ -46,7 +62,7 @@ class LoggerWidget(QWidget, logging.Handler):
 
     def _level_to_style(self, level):
         if level == logging.CRITICAL:
-            return "color:red;font-weight:bold"
+            return "color:red;font-weight:bold;"
         if level == logging.ERROR:
             return "color:red;"
         if level == logging.WARNING:
@@ -58,7 +74,20 @@ class LoggerWidget(QWidget, logging.Handler):
     def emit(self, record):
         self._signal_wrapper.signal.emit(self.format(record), record.levelno)
 
+    def _handle_level_filter(self):
+        selected_level = self._level_widget.currentData()
+        filtered_logs = []
+        for line in self._logs:
+            match = re.match(r'^<span level=\"(\d+)\".*', line)
+            level = int(match.group(1))
+            if level >= selected_level:
+                filtered_logs.append(line)
+        self._text_widget.setHtml('<br>'.join(filtered_logs))
+
     @Slot(str, int)
     def on_log(self, msg, level):
         style = self._level_to_style(level)
-        self.text_widget.append(f'<span style="{style}">{msg}</span>')
+        msg_html = f'<span level="{level}" style="{style}">{msg}</span>'
+        self._logs.append(msg_html)
+        if level >= self._level_widget.currentData():
+            self._text_widget.append(msg_html)
