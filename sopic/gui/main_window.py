@@ -133,7 +133,6 @@ class MainWindow(QMainWindow):
 
         self._splitter_widget.addWidget(self._steps_viewer_widget)
         self._splitter_widget.addWidget(self._logger_widget)
-        self._splitter_widget.addWidget(self._logger_widget)
 
         h_layout_child.addWidget(self._splitter_widget)
 

@@ -99,3 +99,7 @@ class LoggerWidget(QWidget, logging.Handler):
                 self._text_widget.clear()
                 return True
         return super().event(event)
+
+    def close(self):
+        # prevent issue with LoggingHandler closing before the widget
+        pass
