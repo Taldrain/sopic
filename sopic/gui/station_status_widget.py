@@ -35,15 +35,27 @@ class StationStatusWidget(QWidget):
         self._nb_fail_label = QLabel()
         self._nb_consecutive_fail_label = QLabel()
         self._run_timer_label = QLabel()
-        self._station_time_label = QLabel("Date: {}".format(datetime.date.today().isoformat()))
+        self._station_time_label = QLabel(
+            "Date: {}".format(datetime.date.today().isoformat())
+        )
 
         self._update_labels(0, 0, 0, 0, 0)
 
-    def _update_labels(self, nb_pass, nb_fail, nb_run, nb_consecutive_fails, time_spent):
-        self._nb_pass_label.setText("Number of successes: " + formatDisplayStat(nb_pass, nb_run))
-        self._nb_fail_label.setText("Number of fails: " + formatDisplayStat(nb_fail, nb_run))
-        self._nb_consecutive_fail_label.setText("Consecutive fails: " + str(nb_consecutive_fails))
-        self._run_timer_label.setText("Previous run: {}s (avg: {:.1f}s)".format(time_spent, self._avg_time))
+    def _update_labels(
+        self, nb_pass, nb_fail, nb_run, nb_consecutive_fails, time_spent
+    ):
+        self._nb_pass_label.setText(
+            "Number of successes: " + formatDisplayStat(nb_pass, nb_run)
+        )
+        self._nb_fail_label.setText(
+            "Number of fails: " + formatDisplayStat(nb_fail, nb_run)
+        )
+        self._nb_consecutive_fail_label.setText(
+            "Consecutive fails: " + str(nb_consecutive_fails)
+        )
+        self._run_timer_label.setText(
+            "Previous run: {}s (avg: {:.1f}s)".format(time_spent, self._avg_time)
+        )
 
     def update(self, nb_fail, nb_run, start_date, nb_consecutive_fails):
         nb_pass = nb_run - nb_fail
@@ -51,6 +63,8 @@ class StationStatusWidget(QWidget):
         time_spent = (datetime.datetime.utcnow() - start_date).seconds
 
         if nb_run > 0:
-            self._avg_time = (self._avg_time * (nb_run - 1) / nb_run) + run_duration / nb_run
+            self._avg_time = (
+                self._avg_time * (nb_run - 1) / nb_run
+            ) + run_duration / nb_run
 
         self._update_labels(nb_pass, nb_fail, nb_run, nb_consecutive_fails, time_spent)

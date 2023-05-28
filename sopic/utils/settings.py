@@ -6,6 +6,7 @@ def overwrite_settings_values(default_settings, settings):
 
     return default_settings
 
+
 # extract only the value key to ease the use by the steps
 def step_settings(settings):
     res = dict()

@@ -11,6 +11,7 @@ from sopic.utils.logger import widget_formatter
 class LogSignal(QObject):
     signal = Signal(str, int)
 
+
 class LoggerWidget(QWidget, logging.Handler):
     _signal_wrapper = LogSignal()
 
@@ -78,11 +79,11 @@ class LoggerWidget(QWidget, logging.Handler):
         selected_level = self._level_widget.currentData()
         filtered_logs = []
         for line in self._logs:
-            match = re.match(r'^<span level=\"(\d+)\".*', line)
+            match = re.match(r"^<span level=\"(\d+)\".*", line)
             level = int(match.group(1))
             if level >= selected_level:
                 filtered_logs.append(line)
-        self._text_widget.setHtml('<br>'.join(filtered_logs))
+        self._text_widget.setHtml("<br>".join(filtered_logs))
 
     @Slot(str, int)
     def on_log(self, msg, level):

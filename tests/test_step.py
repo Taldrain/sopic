@@ -4,11 +4,13 @@ from sopic import Step
 class DummyLogger:
     def debug(self, x):
         pass
-
     def info(self, x):
         pass
-
+    def warn(self, x):
+        pass
     def error(self, x):
+        pass
+    def critical(self, x):
         pass
 
 
@@ -16,8 +18,8 @@ def test_step_name():
     class CustomStep(Step):
         STEP_NAME = "custom-step"
 
-    step = CustomStep("station_name", 42, None, True)
-    assert step.getStepName() == "custom-step"
+    step = CustomStep([], None)
+    assert step.STEP_NAME == "custom-step"
 
 
 def test_step_ok():

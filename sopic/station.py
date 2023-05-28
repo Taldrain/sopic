@@ -52,7 +52,7 @@ class Station:
             self.disable_file_logging,
         )
 
-        if '.' in self.STATION_NAME:
+        if "." in self.STATION_NAME:
             # Using a '.' might results in an incorrect display of the logs in
             # the logger widget. Only this handler parses and modifies the
             # logger name. See `WidgetFormatter` in the `utils/logger.py` file
@@ -60,7 +60,9 @@ class Station:
 
         if self.start_step_key is None:
             self.start_step_key = list(self.dag.keys())[0]
-            self.logger.warning(f"`start_step_key` is not defined, defaulting to `{self.start_step_key}` as first step")
+            self.logger.warning(
+                f"`start_step_key` is not defined, defaulting to `{self.start_step_key}` as first step"
+            )
 
         self._next_step_handlerUI = next_step_handlerUI
         self._end_run_handlerUI = end_run_handlerUI
@@ -125,7 +127,9 @@ class Station:
         try:
             os.remove(self._get_settings_file_path())
         except Exception as e:
-            self.logger.error(f"Error while trying to delete previous settings file: {repr(e)}")
+            self.logger.error(
+                f"Error while trying to delete previous settings file: {repr(e)}"
+            )
             pass
         self._load_settings()
 
@@ -201,14 +205,16 @@ class Station:
                     # of performing a copy. The immutability needs to be run
                     # recursively on the value
                     deepcopy(step_settings(self._settings)),
-                    MappingProxyType(self._run_info)
+                    MappingProxyType(self._run_info),
                 )
             except Exception as e:
-                self.logger.error(f"Exception not match in step {step.STEP_NAME}: {repr(e)}")
+                self.logger.error(
+                    f"Exception not match in step {step.STEP_NAME}: {repr(e)}"
+                )
                 # Catch any non-catched exception with a default error_code
                 step_result = step.buildStepResult(
                     False,
-                    next_step_key=step.get_step_key('_err'),
+                    next_step_key=step.get_step_key("_err"),
                     info_str=repr(e),
                     error_code=-1,
                 )
@@ -221,7 +227,9 @@ class Station:
                     # raise error if the next step is not defined and multiple
                     # steps are possible
                     if len(childs) != 1:
-                        raise Exception(f"Multiple potential next steps for step {step_key}")
+                        raise Exception(
+                            f"Multiple potential next steps for step {step_key}"
+                        )
                     # otherwise take the step defined in self.dag
                     if type(childs) is dict:
                         # if it's a dict, we first need to convert to a list
@@ -231,7 +239,9 @@ class Station:
                 # raise exception if the next step is not defined as a potential
                 # step in self.dag
                 if next_step_key not in self.dag.keys():
-                    raise Exception(f"Step {next_step_key} is not a child of step {step_key}")
+                    raise Exception(
+                        f"Step {next_step_key} is not a child of step {step_key}"
+                    )
 
             self.logger.debug(f"Next step key: {next_step_key}")
 
@@ -279,8 +289,7 @@ class Station:
     def end_run_handler(self, is_success):
         self._run_info["run"]["success"] = is_success
         self._run_info["run"]["consecutive_failed"] = (
-            self._run_info["run"]["consecutive_failed"] + 1
-            if not is_success else 0
+            self._run_info["run"]["consecutive_failed"] + 1 if not is_success else 0
         )
         self._run_info["run"]["nb_run"] += 1
         if not is_success:
@@ -290,9 +299,9 @@ class Station:
             self._run_info["run"]["nb_failed"],
             self._run_info["run"]["nb_run"],
             self._run_info["run"]["start_date"],
-            self._run_info["run"]["consecutive_failed"]
+            self._run_info["run"]["consecutive_failed"],
         )
-        if (is_success):
+        if is_success:
             self.logger.info("The run succeeded")
         else:
             self.logger.warn("The run failed")

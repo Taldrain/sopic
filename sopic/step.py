@@ -16,7 +16,7 @@ class Step:
         if len(self.STEP_NAME) == 0:
             raise NameError("STEP_NAME should be defined")
 
-        if '.' in self.STEP_NAME:
+        if "." in self.STEP_NAME:
             # Using a '.' might results in an incorrect display of the logs in
             # the logger widget. Only this handler parses and modifies the
             # logger name. See `WidgetFormatter` in the `utils/logger.py` file
@@ -43,12 +43,12 @@ class Step:
         self.logger.debug("Ending step")
 
     def buildStepResult(
-            self,
-            is_success,
-            next_step_key=None,
-            info_str=None,
-            error_code=None,
-        ):
+        self,
+        is_success,
+        next_step_key=None,
+        info_str=None,
+        error_code=None,
+    ):
         return {
             "isSuccess": is_success,
             "infoStr": info_str,

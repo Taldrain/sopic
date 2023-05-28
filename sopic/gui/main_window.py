@@ -31,7 +31,9 @@ from .station_info_widget import StationInfoWidget
 from .steps_viewer_widget import StepsViewerWidget
 from .settings_dialog_widget import SettingsDialogWidget
 from .logger_widget import LoggerWidget
+
 # from .password_dialog import PasswordDialog
+
 
 class MainWindow(QMainWindow):
     _station = None
@@ -184,7 +186,9 @@ class MainWindow(QMainWindow):
     #     self.runViewerWidget.currentTabKO()
 
     def end_run_handlerUI(self, nb_fail, nb_run, start_date, nb_consecutive_fails):
-        self._station_status_widget.update(nb_fail, nb_run, start_date, nb_consecutive_fails)
+        self._station_status_widget.update(
+            nb_fail, nb_run, start_date, nb_consecutive_fails
+        )
 
     def forceStepHandlerUI(self, index, clearRunViewer=False):
         if clearRunViewer:

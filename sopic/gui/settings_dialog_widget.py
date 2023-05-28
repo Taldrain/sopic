@@ -54,8 +54,9 @@ class SettingsDialogWidget(QDialog):
         input = QLineEdit()
         input.setText(str(settings["value"]))
         input.setReadOnly(settings["edit"] is False if "edit" in settings else False)
-        input.textEdited.connect(lambda:
-            self._settings.get(key).update({ "value": input.text() }))
+        input.textEdited.connect(
+            lambda: self._settings.get(key).update({"value": input.text()})
+        )
         return (label, input)
 
     def handle_validate(self):

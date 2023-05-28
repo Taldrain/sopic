@@ -7,6 +7,7 @@ def list_childs(childs):
         return childs
     return list(childs.values())
 
+
 def list_childs_items(childs):
     if type(childs) is list:
         return ((i, i) for i in childs)
@@ -53,7 +54,7 @@ def is_valid_dag(graph):
 
 
 def graph_to_dot(graph, start_step, station_name):
-    dot = graphviz.Digraph(format='png')
+    dot = graphviz.Digraph(format="png")
 
     steps = list_steps(graph)
     for step in steps:
