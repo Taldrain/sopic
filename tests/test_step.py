@@ -13,6 +13,8 @@ class DummyLogger:
     def critical(self, x):
         pass
 
+class DummyStep(Step):
+    STEP_NAME = "dummy-step"
 
 def test_step_name():
     class CustomStep(Step):
@@ -23,91 +25,83 @@ def test_step_name():
 
 
 def test_step_ok():
-    step = Step("station_name", 42, DummyLogger(), True)
+    step = DummyStep([], DummyLogger())
     assert step.OK() == (
         {
-            "passed": True,
-            "stepData": {},
-            "terminate": False,
+            "isSuccess": True,
             "infoStr": "",
             "errorCode": None,
+            "nextStepKey": None,
         }
     )
 
 
-def test_step_ok_with_infostr():
-    step = Step("station_name", 42, DummyLogger(), True)
-    assert step.OK("infoStr") == (
+def test_step_ok_info_str():
+    step = DummyStep([], DummyLogger())
+    assert step.OK(info_str="infoStr") == (
         {
-            "passed": True,
-            "stepData": {},
-            "terminate": False,
+            "isSuccess": True,
             "infoStr": "infoStr",
             "errorCode": None,
+            "nextStepKey": None,
+        }
+    )
+
+def test_step_ok_next_step_key():
+    step = DummyStep([], DummyLogger())
+    assert step.OK(next_step_key="foo") == (
+        {
+            "isSuccess": True,
+            "infoStr": "",
+            "errorCode": None,
+            "nextStepKey": "foo",
         }
     )
 
 
 def test_step_ko():
-    step = Step("station_name", 42, DummyLogger(), True)
+    step = DummyStep([], DummyLogger())
     assert step.KO() == (
         {
-            "passed": False,
-            "stepData": {},
-            "terminate": False,
+            "isSuccess": False,
             "infoStr": "",
             "errorCode": None,
+            "nextStepKey": None,
         }
     )
 
 
-def test_step_ko_terminate():
-    step = Step("station_name", 42, DummyLogger(), True)
-    assert step.KO(terminate=True) == (
+def test_step_ko_error_code():
+    step = DummyStep([], DummyLogger())
+    assert step.KO(error_code=123) == (
         {
-            "passed": False,
-            "stepData": {},
-            "terminate": True,
-            "infoStr": "",
-            "errorCode": None,
-        }
-    )
-
-
-def test_step_ko_errorCode():
-    step = Step("station_name", 42, DummyLogger(), True)
-    assert step.KO(errorCode=123) == (
-        {
-            "passed": False,
-            "stepData": {},
-            "terminate": False,
+            "isSuccess": False,
             "infoStr": "",
             "errorCode": 123,
+            "nextStepKey": None,
         }
     )
 
 
-def test_step_ko_errorStr():
-    step = Step("station_name", 42, DummyLogger(), True)
-    assert step.KO(errorStr="foo") == (
+def test_step_ko_info_str():
+    step = DummyStep([], DummyLogger())
+    assert step.KO(info_str="foo") == (
         {
-            "passed": False,
-            "stepData": {},
-            "terminate": False,
+            "isSuccess": False,
             "infoStr": "foo",
             "errorCode": None,
+            "nextStepKey": None,
         }
     )
 
 
-def test_step_ko_fulle():
-    step = Step("station_name", 42, DummyLogger(), True)
-    assert step.KO(terminate=True, errorCode=123, errorStr="foo") == (
+def test_step_ko_full():
+    step = DummyStep([], DummyLogger())
+    assert step.KO(info_str="foo", error_code=42, next_step_key="bar") == (
         {
-            "passed": False,
-            "stepData": {},
-            "terminate": True,
+            "isSuccess": False,
             "infoStr": "foo",
-            "errorCode": 123,
+            "errorCode": 42,
+            "nextStepKey": "bar",
         }
     )
