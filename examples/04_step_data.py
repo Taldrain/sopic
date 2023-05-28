@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QApplication
 from sopic.station import Station
 from sopic.gui import MainWindow
 
-from examples.steps import StartButton, StoreData, RetrieveData, End
+from examples.steps import StartButton, StoreData, RetrieveData
 
 
 class StepDataStation(Station):
@@ -19,8 +19,7 @@ class StepDataStation(Station):
     dag = {
         'start': (StartButton, ['store']),
         'store': (StoreData, ['retrieve']),
-        'retrieve': (RetrieveData, ['end']),
-        'end': (End, []),
+        'retrieve': (RetrieveData, []),
     }
 
 

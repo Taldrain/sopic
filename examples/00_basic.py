@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QApplication
 from sopic.station import Station
 from sopic.gui import MainWindow
 
-from examples.steps import StartButton, Select, AlwaysOK, AlwaysKO, End
+from examples.steps import StartButton, Select, AlwaysOK, AlwaysKO
 
 
 class BasicStation(Station):
@@ -20,9 +20,8 @@ class BasicStation(Station):
         'start': (StartButton, ['select']),
         # will allow to either go to step `foo` or `bar`
         'select': (Select, {'ok': 'foo', 'ko': 'bar'}),
-        'foo': (AlwaysOK, ['end']),
-        'bar': (AlwaysKO, ['end']),
-        'end': (End, []),
+        'foo': (AlwaysOK, []),
+        'bar': (AlwaysKO, []),
     }
 
     start_step_key = 'start'
