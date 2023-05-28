@@ -2,8 +2,8 @@ import re
 import logging
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QTextEdit, QComboBox
-from PySide6.QtCore import Signal, Slot, QObject
-from PySide6.QtGui import QPalette, QColor, QFont
+from PySide6.QtCore import Signal, Slot, QObject, Qt
+from PySide6.QtGui import QPalette, QColor, QFont, QKeyEvent
 
 from sopic.utils.logger import widget_formatter
 
@@ -91,3 +91,11 @@ class LoggerWidget(QWidget, logging.Handler):
         self._logs.append(msg_html)
         if level >= self._level_widget.currentData():
             self._text_widget.append(msg_html)
+
+    def event(self, event):
+        if event.type() == QKeyEvent.KeyPress:
+            if event.modifiers() & Qt.ControlModifier and event.key() == Qt.Key_L:
+                self._logs.clear()
+                self._text_widget.clear()
+                return True
+        return super().event(event)
