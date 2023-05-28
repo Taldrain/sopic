@@ -4,17 +4,23 @@ from sopic import Step
 class DummyLogger:
     def debug(self, x):
         pass
+
     def info(self, x):
         pass
+
     def warn(self, x):
         pass
+
     def error(self, x):
         pass
+
     def critical(self, x):
         pass
 
+
 class DummyStep(Step):
     STEP_NAME = "dummy-step"
+
 
 def test_step_name():
     class CustomStep(Step):
@@ -46,6 +52,7 @@ def test_step_ok_info_str():
             "nextStepKey": None,
         }
     )
+
 
 def test_step_ok_next_step_key():
     step = DummyStep([], DummyLogger())

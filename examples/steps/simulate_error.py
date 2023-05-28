@@ -8,8 +8,10 @@ from sopic.gui import StepUI
 
 SELECTION = ""
 
+
 class KOException(Exception):
     pass
+
 
 class SimulateErrorUI(StepUI):
     def __init__(self, event):
@@ -51,7 +53,6 @@ class SimulateErrorUI(StepUI):
         self._event.set()
 
 
-
 class SimulateError(Step):
     STEP_NAME = "simulate-error"
     _event = threading.Event()
@@ -64,16 +65,16 @@ class SimulateError(Step):
 
         global SELECTION
         try:
-            if SELECTION == 'ok':
-                return self.OK(self.get_step_key('ok'))
+            if SELECTION == "ok":
+                return self.OK()
 
-            if SELECTION == 'ko':
+            if SELECTION == "ko":
                 raise KOException
 
-            if SELECTION == 'throw':
+            if SELECTION == "throw":
                 raise Exception
         except KOException:
-            return self.KO(self.get_step_key('ko'))
+            return self.KO(self.get_step_key("ko"))
 
     def getWidget(self):
         if self.widget is None:

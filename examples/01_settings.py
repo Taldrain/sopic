@@ -17,15 +17,15 @@ class SettingsStation(Station):
     DEBUG = True
 
     dag = {
-        'start': (StartButton, ['print']),
-        'print': (PrintSettings, ['get']),
-        'get': (GetSettings, []),
+        "start": (StartButton, ["print"]),
+        "print": (PrintSettings, ["get"]),
+        "get": (GetSettings, []),
     }
 
     default_settings = {
-        "random-settings": { "value": 42, "label": "A random settings" },
-        "read-only": { "value": 12, "label": "Read-only settings", "edit": False },
-        "no-label": { "value": "hello" },
+        "random-settings": {"value": 42, "label": "A random settings"},
+        "read-only": {"value": 12, "label": "Read-only settings", "edit": False},
+        "no-label": {"value": "hello"},
     }
 
 

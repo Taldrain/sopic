@@ -17,14 +17,14 @@ class BasicStation(Station):
     DEBUG = True
 
     dag = {
-        'start': (StartButton, ['select']),
+        "start": (StartButton, ["select"]),
         # will allow to either go to step `foo` or `bar`
-        'select': (Select, {'ok': 'foo', 'ko': 'bar'}),
-        'foo': (AlwaysOK, []),
-        'bar': (AlwaysKO, []),
+        "select": (Select, {"ok": "foo", "ko": "bar"}),
+        "foo": (AlwaysOK, []),
+        "bar": (AlwaysKO, []),
     }
 
-    start_step_key = 'start'
+    start_step_key = "start"
 
 
 if __name__ == "__main__":

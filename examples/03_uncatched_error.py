@@ -17,10 +17,10 @@ class UncatchedException(Station):
     DEBUG = True
 
     dag = {
-        'start': (StartButton, ['error']),
-        'error': (SimulateError, {'ok': 'catched', 'ko': 'catched', '_err': 'uncatched'}),
-        'catched': (Catched, []),
-        'uncatched': (Uncatched, []),
+        "start": (StartButton, ["error"]),
+        "error": (SimulateError, {"ko": "catched", "_err": "uncatched"}),
+        "catched": (Catched, []),
+        "uncatched": (Uncatched, []),
     }
 
 

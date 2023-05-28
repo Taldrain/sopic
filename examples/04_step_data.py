@@ -17,9 +17,9 @@ class StepDataStation(Station):
     DEBUG = True
 
     dag = {
-        'start': (StartButton, ['store']),
-        'store': (StoreData, ['retrieve']),
-        'retrieve': (RetrieveData, []),
+        "start": (StartButton, ["store"]),
+        "store": (StoreData, ["retrieve"]),
+        "retrieve": (RetrieveData, []),
     }
 
 

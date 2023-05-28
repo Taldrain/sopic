@@ -54,9 +54,9 @@ class Select(Step):
 
         global IS_OK
         if IS_OK:
-            return self.OK(self.get_step_key('ok'))
+            return self.OK(self.get_step_key("ok"))
 
-        return self.KO(self.get_step_key('ko'))
+        return self.KO(self.get_step_key("ko"))
 
     def getWidget(self):
         if self.widget is None:

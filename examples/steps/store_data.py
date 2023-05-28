@@ -10,8 +10,8 @@ class StoreData(Step):
         super().start()
 
         randomValue = randint(0, 9)
-        self.logger.info(f'Storing random value: {randomValue}')
+        self.logger.info(f"Storing random value: {randomValue}")
 
-        ctx['foo'] = randomValue
+        ctx["foo"] = randomValue
 
         return self.OK()

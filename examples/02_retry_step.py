@@ -17,8 +17,8 @@ class RetryStepStation(Station):
     DEBUG = True
 
     dag = {
-        'start': (StartButton, ['retry']),
-        'retry': (Retry, []),
+        "start": (StartButton, ["retry"]),
+        "retry": (Retry, []),
     }
 
 
