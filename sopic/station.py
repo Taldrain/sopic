@@ -2,7 +2,6 @@ import os
 import time
 import json
 from datetime import datetime
-from types import MappingProxyType
 from copy import deepcopy
 
 from sopic.utils.dag import is_valid_dag, graph_to_dot
@@ -207,7 +206,7 @@ class Station:
                     # of performing a copy. The immutability needs to be run
                     # recursively on the value
                     deepcopy(step_settings(self._settings)),
-                    MappingProxyType(self._run_info),
+                    deepcopy(self._run_info),
                 )
             except Exception as e:
                 self.logger.error(

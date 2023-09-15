@@ -3,8 +3,7 @@
 import sys
 from PySide6.QtWidgets import QApplication
 
-from sopic.station import Station
-from sopic.gui import MainWindow
+from sopic import MainWindow, Station
 from sopic.gui.settings_widgets import number_widget, bool_widget, combobox_widget
 
 from examples.steps import StartButton, PrintSettings, GetSettings
