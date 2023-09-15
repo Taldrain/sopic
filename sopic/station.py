@@ -155,29 +155,24 @@ class Station:
 
     def _get_empty_run_info(self):
         return {
-            "info": {
-                "id": self.STATION_ID,
-                "name": self.STATION_NAME,
-            },
+            "station_id": self.STATION_ID,
+            "station_name": self.STATION_NAME,
             "errors": [],
-            "run": {
-                "success": True,
-                "consecutive_failed": 0,
-                "nb_failed": 0,
-                "nb_run": 0,
-                "last_failed_step": None,
-                "start_date": None,
-            },
+            "is_success" : True,
+            "consecutive_failed": 0,
+            "nb_failed": 0,
+            "nb_run": 0,
+            "last_failed_step": None,
+            "start_date": None,
         }
 
     def _reset_run_info(self):
         run_info = {
             **(self._get_empty_run_info()),
-            "run": {
-                **self._run_info["run"],
-            },
+            "consecutive_failed": self._run_info["consecutive_failed"],
+            "nb_failed": self._run_info["nb_failed"],
+            "nb_run": self._run_info["nb_run"],
         }
-        run_info["run"]["last_failed_step"] = None
         return run_info
 
     def start(self):
@@ -189,7 +184,7 @@ class Station:
 
     def start_run_handler(self):
         self.logger.debug("Starting the run")
-        self._run_info["run"]["start_date"] = datetime.utcnow()
+        self._run_info["start_date"] = datetime.utcnow()
 
     def _run(self):
         is_success_run = True
@@ -279,7 +274,7 @@ class Station:
 
             # Track the name of the last step that has failed
             # Can be used to track the run status
-            self._run_info["run"]["last_failed_step"] = step.STEP_NAME
+            self._run_info["last_failed_step"] = step.STEP_NAME
             # When an errorCode is available, store it in the errors array
             if step_result["errorCode"] is not None:
                 self._run_info["errors"].append(
@@ -294,19 +289,19 @@ class Station:
         return is_success_run
 
     def end_run_handler(self, is_success):
-        self._run_info["run"]["success"] = is_success
-        self._run_info["run"]["consecutive_failed"] = (
-            self._run_info["run"]["consecutive_failed"] + 1 if not is_success else 0
+        self._run_info["is_success"] = is_success
+        self._run_info["consecutive_failed"] = (
+            self._run_info["consecutive_failed"] + 1 if not is_success else 0
         )
-        self._run_info["run"]["nb_run"] += 1
+        self._run_info["nb_run"] += 1
         if not is_success:
-            self._run_info["run"]["nb_failed"] += 1
+            self._run_info["nb_failed"] += 1
 
         self._end_run_handlerUI(
-            self._run_info["run"]["nb_failed"],
-            self._run_info["run"]["nb_run"],
-            self._run_info["run"]["start_date"],
-            self._run_info["run"]["consecutive_failed"],
+            self._run_info["nb_failed"],
+            self._run_info["nb_run"],
+            self._run_info["start_date"],
+            self._run_info["consecutive_failed"],
         )
         if is_success:
             self.logger.info("The run succeeded")
