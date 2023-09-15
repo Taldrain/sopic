@@ -215,9 +215,10 @@ class MainWindow(QMainWindow):
             if self._settings_dialog_widget:
                 self.passwordDialogWrapper(self._settings_dialog_widget)
 
-        # Step selection via Ctrl-T
-        if (QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_T):
-            self.passwordDialogWrapper(self.stepStepDialog)
+        # # Step selection via Ctrl-T
+        # if (QApplication.keyboardModifiers() & Qt.ControlModifier)
+        #   and (k == Qt.Key_T):
+        #     self.passwordDialogWrapper(self.stepStepDialog)
 
         # Debug layout via Ctrl-B
         if (QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_B):

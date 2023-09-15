@@ -5,9 +5,9 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QFormLayout,
     QPushButton,
-    QLineEdit,
-    QLabel,
 )
+
+from .settings_widgets import string_widget
 
 
 class SettingsDialogWidget(QDialog):
@@ -21,16 +21,16 @@ class SettingsDialogWidget(QDialog):
         self.save_handler = save_handler
 
         self._settings = self.get_settings_handler()
-        self._inputs_widgets = dict()
+        self._reset_widgets = dict()
 
         form_layout = QFormLayout()
 
         for key in self._settings.keys():
-            label, input = self.generate_settings_widget(
-                key,
-                self._settings[key],
-            )
-            self._inputs_widgets[key] = input
+            widget = string_widget
+            if ('widget' in self._settings[key]):
+                widget = self._settings[key]['widget']
+            label, input, reset = widget(key, self._settings[key], self.on_change)
+            self._reset_widgets[key] = reset
             form_layout.addRow(label, input)
 
         reset_btn = QPushButton("Reset")
@@ -49,15 +49,8 @@ class SettingsDialogWidget(QDialog):
 
         self.setLayout(layout)
 
-    def generate_settings_widget(self, key, settings):
-        label = QLabel(settings["label"] if "label" in settings else key)
-        input = QLineEdit()
-        input.setText(str(settings["value"]))
-        input.setReadOnly(settings["edit"] is False if "edit" in settings else False)
-        input.textEdited.connect(
-            lambda: self._settings.get(key).update({"value": input.text()})
-        )
-        return (label, input)
+    def on_change(self, key, value):
+        self._settings.get(key).update({"value": value})
 
     def handle_validate(self):
         self.save_handler(deepcopy(self._settings))
@@ -67,4 +60,4 @@ class SettingsDialogWidget(QDialog):
         self.reset_handler()
         self._settings = self.get_settings_handler()
         for key in self._settings.keys():
-            self._inputs_widgets[key].setText(str(self._settings[key]["value"]))
+            self._reset_widgets[key](self._settings[key]["value"])

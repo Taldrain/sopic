@@ -6,7 +6,11 @@ from types import MappingProxyType
 from copy import deepcopy
 
 from sopic.utils.dag import is_valid_dag, graph_to_dot
-from sopic.utils.settings import overwrite_settings_values, step_settings
+from sopic.utils.settings import (
+    overwrite_settings_values,
+    filter_settings_json,
+    step_settings,
+)
 from sopic.utils.logger import init_station_logger, get_step_logger
 
 
@@ -100,22 +104,24 @@ class Station:
             self.STATION_NAME + ".json",
         )
 
-    # load the settings from the json file
-    def _load_settings(self):
+    # load the settings from the `default_settings` map and, optionnaly,
+    # from the json file
+    def _load_settings(self, load_json=True):
         if self.default_settings is not None:
             self._settings = deepcopy(self.default_settings)
 
-        try:
-            with open(self._get_settings_file_path()) as data:
-                self._settings = overwrite_settings_values(
-                    self._settings,
-                    json.load(data),
-                )
-        except FileNotFoundError:
-            self.logger.debug("No settings file have been found")
-        except Exception as e:
-            self.logger.error(f"Error while trying to load the settings: {repr(e)}")
-            return
+        if load_json:
+            try:
+                with open(self._get_settings_file_path()) as data:
+                    self._settings = overwrite_settings_values(
+                        self._settings,
+                        json.load(data),
+                    )
+            except FileNotFoundError:
+                self.logger.debug("No settings file have been found")
+            except Exception as e:
+                self.logger.error(f"Error while trying to load the settings: {repr(e)}")
+                return
 
     # handler to return the settings, used by the settigns dialog
     def _get_settings_handler(self):
@@ -131,7 +137,8 @@ class Station:
                 f"Error while trying to delete previous settings file: {repr(e)}"
             )
             pass
-        self._load_settings()
+        # no need to load the settings from the json, we just deleted it
+        self._load_settings(load_json=False)
 
     # handler to save the new settings
     def _save_settings_handler(self, settings):
@@ -141,7 +148,7 @@ class Station:
         self._settings = settings
 
         with open(settings_path, "w") as file:
-            json.dump(self._settings, file)
+            json.dump(filter_settings_json(self._settings), file)
 
     def _init_run_info(self):
         self._run_info = self._get_empty_run_info()
