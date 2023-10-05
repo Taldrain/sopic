@@ -18,12 +18,34 @@ class Station:
     STATION_ID = 0
     STATION_VERSION = None
 
-    dag = []
+    # set to True to enable a png output of the dag
+    DEBUG = False
+
+    # definition of the dag for the station. The dag should be defined as
+    # follow:
+    # ```python{
+    #   "step_key": (StepClass, ["another_step_key"]),
+    #   "another_step_key": (AnotherStepClass, {
+    #     "ok": "child_step_key2",
+    #     "ko": "child_step_key3"
+    #     "_err": "child_step_key4",
+    #   }),
+    #   # ...
+    # }```
+    # "step_key" and "another_step_key" are the keys used to identify the step
+    # `StepClass` and `AnotherStepClass` are the step class object
+    # Each step can have either one or multiple childs:
+    # - a single child can defined in an array, or in a dictionary
+    # - multiple childs must be defined in a dictionary. The key of each
+    #   element in the dictionary is the value returned by the step, with the
+    #   methods `self.OK()` or `self.KO()`. A specific key `_err` can be used
+    #   to send the run to a specific step if an uncatched exception is raised.
+    # Each child is identified by its key.
+    dag = {}
+
+    # used to store the first step key of a run, if not defined it will default
+    # to the first key found in the `self.dag` dictionary
     start_step_key = None
-
-    _run_info = {}
-
-    # ---
 
     # path to settings file
     default_settings_dir = "~/.sopic/settings/"
@@ -35,14 +57,23 @@ class Station:
     disable_file_logging = False
 
     # default settings that will be overwritten by the values from the settings
-    # file
+    # file. Each settings should be defined as:
+    # ```python{ "settings_key": {
+    #   "value": "default_value",
+    #   "label": "Optional label",
+    #   "edit": False,
+    #   "widget": NumberWidget,
+    # } }```
+    # "label" key is optional, the "settings_key" will be used instead
+    # "edit" disable the edition of the settings, it is set to True by default
+    # "widget" switch the default TextEdit widget with a new one
     default_settings = {}
 
     # settings of the station
     _settings = {}
 
-    # Optional password for the settings dialog
-    admin_password = None
+    # specific info about the runs
+    _run_info = {}
 
     def __init__(self, next_step_handlerUI, end_run_handlerUI):
         if len(self.STATION_NAME) == 0:
@@ -57,8 +88,8 @@ class Station:
 
         if "." in self.STATION_NAME:
             # Using a '.' might results in an incorrect display of the logs in
-            # the logger widget. Only this handler parses and modifies the
-            # logger name. See `WidgetFormatter` in the `utils/logger.py` file
+            # the logger widget. See `WidgetFormatter` in the `utils/logger.py`
+            # file
             self.logger.warn("It is recommended to not use a '.' in the STATION_NAME")
 
         if self.start_step_key is None:
@@ -80,11 +111,10 @@ class Station:
         if not is_valid_dag(self.dag):
             raise Exception("self.dag should be a valid directed acyclic graph")
 
-        # TODO: use a better switch to print the dot file
         if self.DEBUG:
             graph_to_dot(self.dag, self.start_step_key, self.STATION_NAME)
 
-    # init each step class with proper parameters
+    # initialize each step class with proper parameters
     def _init_steps(self):
         for key, (step, childs) in self.dag.items():
             step_logger = get_step_logger(
@@ -103,8 +133,8 @@ class Station:
             self.STATION_NAME + ".json",
         )
 
-    # load the settings from the `default_settings` map and, optionnaly,
-    # from the json file
+    # load the settings from the `default_settings` map and, optionally, from
+    # the json file
     def _load_settings(self, load_json=True):
         if self.default_settings is not None:
             self._settings = deepcopy(self.default_settings)
@@ -122,12 +152,12 @@ class Station:
                 self.logger.error(f"Error while trying to load the settings: {repr(e)}")
                 return
 
-    # handler to return the settings, used by the settigns dialog
+    # handler to return the settings, used by the settings dialog
     def _get_settings_handler(self):
         return deepcopy(self._settings)
 
     # handler to reset the settings to the default values defined in the
-    # station file
+    # station file, via the `default_settings` variable
     def _reset_settings_handler(self):
         try:
             os.remove(self._get_settings_file_path())
@@ -139,7 +169,7 @@ class Station:
         # no need to load the settings from the json, we just deleted it
         self._load_settings(load_json=False)
 
-    # handler to save the new settings
+    # handler to save the new settings to the file
     def _save_settings_handler(self, settings):
         settings_path = self._get_settings_file_path()
         os.makedirs(os.path.dirname(settings_path), exist_ok=True)
@@ -174,6 +204,7 @@ class Station:
         }
         return run_info
 
+    # main loop of the station
     def start(self):
         while True:
             self._run_info = self._reset_run_info()
@@ -189,6 +220,8 @@ class Station:
         is_success_run = True
         step_key = self.start_step_key
 
+        # `context` is used to save data between steps. It is reset for each
+        # new run
         context = dict()
         number_retries = 0
 
@@ -237,9 +270,9 @@ class Station:
                         next_step_key = list(childs.values())[0]
                     else:
                         next_step_key = childs[0]
-                # raise exception if the next step is not defined as a potential
-                # step in self.dag
                 if next_step_key not in self.dag.keys():
+                    # raise exception if the next step is not defined as a potential
+                    # step in self.dag
                     raise Exception(
                         f"Step {next_step_key} is not a child of step {step_key}"
                     )
@@ -260,10 +293,9 @@ class Station:
             if step.MAX_RETRIES != 0 and number_retries < step.MAX_RETRIES:
                 step.end()
                 number_retries += 1
-                next_step_key = step_key
                 self.logger.info(f"Retry step: {number_retries}/{step.MAX_RETRIES}")
                 # give a little bit of time before restarting the same step
-                # we could use an incremental timer, or remove it completly
+                # we could use an incremental timer, or remove it completely
                 time.sleep(0.5)
                 continue
 
@@ -272,8 +304,9 @@ class Station:
             number_retries = 0
 
             # Track the name of the last step that has failed
-            # Can be used to track the run status
             self._run_info["last_failed_step"] = step.STEP_NAME
+            # A step has failed, the whole run will fail
+            self._run_info["is_success"] = False
             # When an errorCode is available, store it in the errors array
             if step_result["errorCode"] is not None:
                 self._run_info["errors"].append(
@@ -288,7 +321,6 @@ class Station:
         return is_success_run
 
     def end_run_handler(self, is_success):
-        self._run_info["is_success"] = is_success
         self._run_info["consecutive_failed"] = (
             self._run_info["consecutive_failed"] + 1 if not is_success else 0
         )

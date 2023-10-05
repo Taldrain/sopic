@@ -15,6 +15,8 @@ class StepDataStation(Station):
 
     DEBUG = True
 
+    # "store" step will store data in the context and "retrieve" step will
+    # retrieve it
     dag = {
         "start": (StartButton, ["store"]),
         "store": (StoreData, ["retrieve"]),

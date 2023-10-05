@@ -1,9 +1,10 @@
 Sopic
 ======
 
-Helper library for a test station in a production line.
+GUI library for test stations for your hardware on a production line.
 
 Define a station that will run a number of steps, in sequential order.
+Visualize the steps with the GUI
 
 
 # Screenshots
@@ -15,59 +16,37 @@ Define a station that will run a number of steps, in sequential order.
 
 # Installation
 
-After a clone of the repository
-
-`poetry install`
+`pip install sopic`
 
 
 # How to use
 
-Initialise a `MainWindow` with a station object, child of the `Station` class.
+Initialise `MainWindow` with a station object, child of the `Station` class.
 
-In your station class you can set some parameters and define your list of steps.
-
-You can also define a settings dialog when initializing the `MainWindow`.
-
-Check the examples directory (eg: `poetry run python examples/00_basic.py`)
+In your station class you can define the steps in a DAG and settings for the
+runs.
 
 
 # Keybinds
 
-### Exit the station
-Ctrl-Q
-
-### Settings
-**Ctrl-P**
-
-DIsplay the settings dialog. The configuration is saved. The settings can be
-reset to the default configuration set in the station class.
-
-### Step selection
-**Ctrl-T**
-
-Allow to enable/disable steps. The configuration is not saved.
-
-### Log and settings layout
-**Ctrl-B**
-
-Display settings and log window
-
+- `Ctrl-Q`: exit the station
+- `Ctrl-P`: display the settings dialog, when available
+- `Ctrl-B`: display the logs
 
 # Definitions
 
 A step is the smallest component, a class invoked at the start of the station.
-A method from this object will be called to start the step. The step has then
-access to data from previous steps, if they provided it, and global settings of
-the station.
-After being called, the step has to notify the station of the tests passed or
-not.
+The `start` method from this object will be called to start the step. The step
+has then access to data from previous steps, if they provided it, settings and
+current run info.
+After being called the step can either returns `self.OK()` or `self.KO()` to
+notify the station if the step has passed or not. These two methods take a
+parameters to select the next step.
 
-A station is a group of steps. It's also defined as a class and will store the
-default settings, station configuration and the steps.
+A station is a group of steps. The steps are defined in a Direct Acyclic Graph.
 
-A run is the term used to define the "list" of steps from the first to the last,
-as defined in the station class.
-So a station will perform multiple runs. Each one composed of multiple steps.
+A run is the succession of the steps. A run can either Pass or Fail. A station
+will perform multiple runs.
 
 
 # Features
@@ -75,8 +54,8 @@ So a station will perform multiple runs. Each one composed of multiple steps.
 - GUI
 - Share data between steps
 - Settings for step configuration
-- Step selection
 - Logs
+- Easy to customize with wrappers
 
 # Define a station
 
@@ -84,89 +63,66 @@ So a station will perform multiple runs. Each one composed of multiple steps.
 from sopic import Station
 
 class MyStation(Station):
-    # Used as window title
-    DISPLAY_NAME = 'my station'
-    # Used for logs, filenames
+    # Used as window title, log file, settings file
     STATION_NAME = 'my-station'
-    # Same use as STATION_NAME, useful to when saving the previous station
+    # Same use as STATION_NAME
     STATION_ID = 0
+    # Optional, displayed in the bottom right corner of the main window
+    STATION_VERSION = "1.0.0"
 
-    # Allow to disable logging to files
-    disable_file_logging = False
+    # Will generate a png output of the dag
+    DEBUG = True
 
-    # List of steps in the station
-    steps = [
-      Step1,
-      # Can deactivate step by default
-      # steps can be enabled with the step selection dialog
-      (Step2, False),
-    ]
+    # Select the first step, via its key
+    start_step_key = "start"
 
-    # By default a fail in a step will force the run to go directly to the
-    # last step, skipping other steps.
-    # By defining the non blocking steps we allow the run to continue even
-    # if these steps failed. Useful when testing the station without caring
-    # about the step output
-    # Note that the run is still a fail if one of these steps fail.
-    nonBlockingSteps = [
-      Step1.STEP_NAME,
-    ]
-
-    # Steps that will always be skipped if one previous step has failed.
-    # Useful when also using nonBlockingSteps
-    stepsSkippedOnPreviousFail = [
-      Step2.STEP_NAME,
-    ]
+    # DAG of the steps
+    dag = {
+        # first step
+        # `StartButton` is the step class
+        # `["select"] is the child, no matter if the StartButton fails, the
+        # child will be the one with the `"select"` key
+        "start": (StartButton, ["select"]),
+        # This step define another step class, `Select`
+        # This step can select one of two childs
+        # - "foo", if the step returns the key "ok"
+        # - "bar", if the step returns the key "ko"
+        "select": (Select, {"ok": "foo", "ko": "bar"}),
+        # The next two steps don't have any child, returning for those step
+        # will end the run
+        "foo": (AlwaysOK, []),
+        "bar": (AlwaysKO, []),
+    }
 
     # Default settings of the station. Can be updated with the SettingsDialog.
-    defaultSettings = {
-      'random-setting': '42',
+    default_settings = {
+        "random-settings": {"value": 42, "label": "A random settings"},
     }
 ```
 
 # Define a step
 
 ```python
-from sopic import Step
+from sopic.step import Step
 
 class MyStep(Step):
-    # name of the step, used for display and logs
+    # Name of the step, used for display and logs
     STEP_NAME = 'my-step'
-    # number of retries allowed on fail
+    # Number of retries allowed on fail
     MAX_RETRIES = 1
 
-    # called when the step is started
-    # stepsData contains data of the previous steps, if available.
-    # Data of steps is available via `stepsData[Step1.STEP_NAME]`.
-    # Settings is available at `stepsData['__settings']`.
-    # Check the End step in the example folder for more use of the stepsData.
-    def start(self, stepsData):
+    # Called when the step is started
+    # `context` contains value stored by previous steps
+    # `settings` contains the station settings
+    # `run_info` contains current run information
+    def start(self, context, settings, run_info):
         super().start()
 
         # Add your tests here
-        # You have access to `self.logger` to log some info.
-        # You have access to the object `self.stepData` to store data, it will
-        # be available for future the next steps. This object is reset on each run.
-        # The step will have to return either `OK` or `KO`
 
-        # A string can be passed to describe the success of the step.
-        return self.OK('all good')
-
-        # On error, the step should return `self.KO`
-        # terminate, flag will force the run to end.
-        # errorStr and errorCode is used to describe the error
-        # return self.KO(
-            terminate = False,
-            errorStr = "something happened",
-            errorCode = 42
-        )
-
-    # Used if the step define use a StepUI
-    # Check the steps in the examples directory
-    def getWidget(self):
-        if (self.widet === None):
-            self.widget = MyStepUI()
-        return self.widget
+        # you can select specific child key as listed in the dag
+        return self.OK('ok')
+        # return self.OK('another-child-key')
 ```
 
 
@@ -174,9 +130,19 @@ class MyStep(Step):
 
 [Check the examples directory](./examples)
 
+To run the examples:
+```bash
+git clone https://github.com/Taldrain/sopic
+cd sopic
+poetry install
+poetry run examples/00_basic.py
+```
+
 
 # See also
 
 [exclave](https://github.com/exclave/exclave)
 
 [Exclave: Hardware Testing in Mass Production, Made Easier](https://www.bunniestudios.com/blog/?p=5450)
+
+[awesome-hardware-test](https://github.com/sschaetz/awesome-hardware-test)

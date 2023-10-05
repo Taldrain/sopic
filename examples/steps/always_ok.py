@@ -1,4 +1,4 @@
-from sopic.step import Step
+from sopic import Step
 
 
 class AlwaysOK(Step):

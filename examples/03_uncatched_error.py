@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QApplication
 
 from sopic import MainWindow, Station
 
-from examples.steps import StartButton, SimulateError, Uncatched, Catched
+from examples.steps import AlwaysOK, StartButton, SimulateError, Uncatched, Catched
 
 
 class UncatchedException(Station):
@@ -17,7 +17,15 @@ class UncatchedException(Station):
 
     dag = {
         "start": (StartButton, ["error"]),
-        "error": (SimulateError, {"ko": "catched", "_err": "uncatched"}),
+        # this step can either:
+        # generate an uncatched error, which will go in the `"_err"` child
+        # generate an error catched by the step, and which return "KO"
+        "error": (SimulateError, {
+            "ok": "no_error",
+            "ko": "catched",
+            "_err": "uncatched",
+        }),
+        "no_error": (AlwaysOK, []),
         "catched": (Catched, []),
         "uncatched": (Uncatched, []),
     }

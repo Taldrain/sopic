@@ -21,6 +21,7 @@ class SettingsStation(Station):
         "get": (GetSettings, []),
     }
 
+    # the widget key allow to use specific widgets for the settings
     default_settings = {
         "random-settings": {
             "value": "foo",

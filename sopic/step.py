@@ -18,14 +18,17 @@ class Step:
 
         if "." in self.STEP_NAME:
             # Using a '.' might results in an incorrect display of the logs in
-            # the logger widget. Only this handler parses and modifies the
-            # logger name. See `WidgetFormatter` in the `utils/logger.py` file
+            # the logger widget. See `WidgetFormatter` in the `utils/logger.py`
+            # file
             logger.warn("It is recommended to not use '.' in the STEP_NAME")
 
         self._childs = childs
         self.logger = logger
 
-    # XXX: comments
+    # Try to access the step key using a child key
+    # if `_childs` is a dict, we're trying to access the dictionary via a key
+    # if `_childs` is an array, we're trying to access the array via an index
+    # if nothing works, we returns `None`
     def get_step_key(self, key):
         if type(self._childs) is dict and key in self._childs:
             return self._childs[key]
@@ -57,7 +60,6 @@ class Step:
         }
 
     # The step has passed
-    # stepData store data to be available for next steps
     def OK(self, next_step_key=None, info_str=""):
         log_str = "Step OK"
         if len(info_str) > 0:
@@ -70,9 +72,8 @@ class Step:
         )
 
     # The step has failed
-    # stepData store data to be available for next steps
-    # info_str store string about the step error
-    # error_code store error code about the step error
+    # `error_code` stores error code about the step error
+    # `info_str` stores string about the step error
     def KO(self, next_step_key=None, info_str="", error_code=None):
         log_str = "Step KO"
         if len(info_str) > 0:
