@@ -3,6 +3,7 @@ import time
 import json
 from datetime import datetime
 from copy import deepcopy
+from xdg_base_dirs import xdg_config_home, xdg_data_home
 
 from sopic.utils.dag import is_valid_dag, graph_to_dot
 from sopic.utils.settings import (
@@ -32,8 +33,9 @@ class Station:
     #   }),
     #   # ...
     # }```
-    # "step_key" and "another_step_key" are the keys used to identify the step
-    # `StepClass` and `AnotherStepClass` are the step class object
+    # "step_key" and "another_step_key" are the keys used to identify the
+    # steps.
+    # `StepClass` and `AnotherStepClass` are the step class objects.
     # Each step can have either one or multiple childs:
     # - a single child can defined in an array, or in a dictionary
     # - multiple childs must be defined in a dictionary. The key of each
@@ -48,10 +50,10 @@ class Station:
     start_step_key = None
 
     # path to settings file
-    default_settings_dir = "~/.sopic/settings/"
+    default_settings_dir = xdg_config_home().joinpath("sopic/settings")
 
     # path to logs file
-    default_log_dir = "~/.sopic/logs/"
+    default_log_dir = xdg_data_home().joinpath("sopic/logs")
 
     # should the log to file be disabled
     disable_file_logging = False
