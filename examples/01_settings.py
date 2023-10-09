@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QApplication
 
 from sopic import MainWindow, Station
 
-from examples.steps import StartButton, PrintSettings, GetSettings
+from examples.steps import PrintSettings, GetSettings
 
 
 class SettingsStation(Station):
@@ -16,7 +16,6 @@ class SettingsStation(Station):
     DEBUG = True
 
     dag = {
-        "start": (StartButton, ["print"]),
         "print": (PrintSettings, ["get"]),
         "get": (GetSettings, []),
     }

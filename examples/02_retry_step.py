@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QApplication
 
 from sopic import MainWindow, Station
 
-from examples.steps import StartButton, Retry
+from examples.steps import Retry
 
 
 class RetryStepStation(Station):
@@ -16,7 +16,6 @@ class RetryStepStation(Station):
     DEBUG = True
 
     dag = {
-        "start": (StartButton, ["retry"]),
         "retry": (Retry, []),
     }
 

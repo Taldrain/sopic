@@ -60,9 +60,9 @@ class Step:
         }
 
     # The step has passed
-    def OK(self, next_step_key=None, info_str=""):
+    def OK(self, next_step_key=None, info_str=None):
         log_str = "Step OK"
-        if len(info_str) > 0:
+        if info_str is not None:
             log_str += f" {info_str}"
         self.logger.info(log_str)
         return self.buildStepResult(
@@ -74,9 +74,9 @@ class Step:
     # The step has failed
     # `error_code` stores error code about the step error
     # `info_str` stores string about the step error
-    def KO(self, next_step_key=None, info_str="", error_code=None):
+    def KO(self, next_step_key=None, info_str=None, error_code=None):
         log_str = "Step KO"
-        if len(info_str) > 0:
+        if info_str is not None:
             log_str += f" {info_str}"
         self.logger.error(log_str)
         return self.buildStepResult(

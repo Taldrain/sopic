@@ -11,5 +11,9 @@ class StepsViewerWidget(QTabWidget):
             self.addTab(step.getWidget(), step.STEP_NAME)
             self.tabBar().setTabEnabled(index, False)
 
+    def insert_tab(self, index, widget, tab_name):
+        self.insertTab(index, widget, tab_name)
+        self.tabBar().setTabEnabled(index, False)
+
     def update_tab(self, step):
         self.setCurrentWidget(step.getWidget())

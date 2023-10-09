@@ -56,7 +56,7 @@ class Select(Step):
         if IS_OK:
             return self.OK(self.get_step_key("ok"))
 
-        return self.KO(self.get_step_key("ko"))
+        return self.KO(self.get_step_key("ko"), "KO button clicked")
 
     def getWidget(self):
         if self.widget is None:

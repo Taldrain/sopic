@@ -15,6 +15,7 @@ from .station_info_widget import StationInfoWidget
 from .steps_viewer_widget import StepsViewerWidget
 from .settings_dialog_widget import SettingsDialogWidget
 from .logger_widget import LoggerWidget
+from .start_screen_widget import StartScreenWidget
 
 
 class MainWindow(QMainWindow):
@@ -26,12 +27,11 @@ class MainWindow(QMainWindow):
     _steps_viewer_widget = None
     _settings_dialog_widget = None
     _logger_widget = None
-
-    runViewerWidget = None
+    _start_screen_widget = None
 
     _debug_display = False
 
-    def __init__(self, station):
+    def __init__(self, station, start_screen_widget=StartScreenWidget):
         super().__init__()
 
         self._station = station(
@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
         _worker_thread.daemon = True
         _worker_thread.start()
 
-    def _init_widgets(self):
+    def _init_widgets(self, start_screen_widget=StartScreenWidget):
         self._logger_widget = LoggerWidget()
         self._station.logger.addHandler(self._logger_widget)
 
@@ -54,6 +54,11 @@ class MainWindow(QMainWindow):
         self._station_status_widget = StationStatusWidget()
 
         self._steps_viewer_widget = StepsViewerWidget(self._station.get_steps())
+
+        self._start_screen_widget = start_screen_widget()
+        self._steps_viewer_widget.insert_tab(0,
+                                             self._start_screen_widget,
+                                             self._start_screen_widget.TAB_NAME)
 
         if len(self._station._settings) != 0:
             self._settings_dialog_widget = SettingsDialogWidget(
@@ -100,15 +105,31 @@ class MainWindow(QMainWindow):
             self._logger_widget.hide()
 
     def start(self):
+        # before starting the first run we will display the StartScreenWidget
+        self.start_screen_display(True)
         self._station.start()
+
+    def start_screen_display(self, first_run, is_success=False, fails=[]):
+        self._steps_viewer_widget.setCurrentWidget(self._start_screen_widget)
+        self._start_screen_widget.start(first_run, is_success, fails)
+
 
     def next_step_handlerUI(self, step):
         self._steps_viewer_widget.update_tab(step)
 
-    def end_run_handlerUI(self, nb_fail, nb_run, start_date, nb_consecutive_fails):
+    def end_run_handlerUI(self,
+                          nb_fail,
+                          nb_run,
+                          start_date,
+                          nb_consecutive_fails,
+                          is_success,
+                          fails):
         self._station_status_widget.update(
             nb_fail, nb_run, start_date, nb_consecutive_fails
         )
+        # display the StartScreenWidget as a recap of the previous run and a
+        # way to start the next run
+        self.start_screen_display(False, is_success, fails)
 
     def keyPressEvent(self, event):
         k = event.key()

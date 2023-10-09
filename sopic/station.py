@@ -188,7 +188,7 @@ class Station:
         return {
             "station_id": self.STATION_ID,
             "station_name": self.STATION_NAME,
-            "errors": [],
+            "fails": [],
             "is_success" : True,
             "consecutive_failed": 0,
             "nb_failed": 0,
@@ -309,15 +309,13 @@ class Station:
             self._run_info["last_failed_step"] = step.STEP_NAME
             # A step has failed, the whole run will fail
             self._run_info["is_success"] = False
-            # When an errorCode is available, store it in the errors array
-            if step_result["errorCode"] is not None:
-                self._run_info["errors"].append(
-                    {
-                        "step": step.STEP_NAME,
-                        "errorCode": step_result["errorCode"],
-                        "infoStr": step_result["infoStr"],
-                    }
-                )
+            # We keep track of the step that failed, with optional additional
+            # information
+            self._run_info["fails"].append({
+                "stepName": step.STEP_NAME,
+                "errorCode": step_result["errorCode"],
+                "infoStr": step_result["infoStr"],
+            })
             step.end()
             step_key = next_step_key
         return is_success_run
@@ -335,6 +333,8 @@ class Station:
             self._run_info["nb_run"],
             self._run_info["start_date"],
             self._run_info["consecutive_failed"],
+            is_success,
+            self._run_info["fails"],
         )
         if is_success:
             self.logger.info("The run succeeded")

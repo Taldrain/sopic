@@ -12,6 +12,6 @@ class Retry(Step):
         super().start()
 
         if randint(0, 4) != 0:
-            return self.KO()
+            return self.KO(info_str="Failed after 3 retries")
 
         return self.OK()

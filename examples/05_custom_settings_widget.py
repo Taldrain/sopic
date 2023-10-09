@@ -6,7 +6,7 @@ from PySide6.QtWidgets import QApplication
 from sopic import MainWindow, Station
 from sopic.gui.settings_widgets import number_widget, bool_widget, combobox_widget
 
-from examples.steps import StartButton, PrintSettings, GetSettings
+from examples.steps import PrintSettings, GetSettings
 
 class SettingsStation(Station):
     STATION_NAME = "custom-settings-widget-station"
@@ -16,7 +16,6 @@ class SettingsStation(Station):
     DEBUG = True
 
     dag = {
-        "start": (StartButton, ["print"]),
         "print": (PrintSettings, ["get"]),
         "get": (GetSettings, []),
     }

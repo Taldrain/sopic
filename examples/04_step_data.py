@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QApplication
 
 from sopic import MainWindow, Station
 
-from examples.steps import StartButton, StoreData, RetrieveData
+from examples.steps import StoreData, RetrieveData
 
 
 class StepDataStation(Station):
@@ -18,7 +18,6 @@ class StepDataStation(Station):
     # "store" step will store data in the context and "retrieve" step will
     # retrieve it
     dag = {
-        "start": (StartButton, ["store"]),
         "store": (StoreData, ["retrieve"]),
         "retrieve": (RetrieveData, []),
     }
