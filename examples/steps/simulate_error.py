@@ -4,8 +4,10 @@ from PySide6.QtWidgets import QPushButton, QHBoxLayout
 
 from sopic.step import Step
 
+
 class KOException(Exception):
     pass
+
 
 class SimulateError(Step):
     STEP_NAME = "simulate-error"

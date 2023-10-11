@@ -3,6 +3,7 @@ import threading
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel
 
+
 class StartScreenWidget(QWidget):
     TAB_NAME = "Start screen"
 
@@ -39,12 +40,11 @@ class StartScreenWidget(QWidget):
 
     def _format_fail(self, fail):
         res = fail["stepName"]
-        if (fail["infoStr"] is not None):
+        if fail["infoStr"] is not None:
             res += ": {}".format(fail["infoStr"])
-        if (fail["errorCode"] is not None):
+        if fail["errorCode"] is not None:
             res += " (error code: {})".format(fail["errorCode"])
         return res
-
 
     def _show_step_failed(self, fails):
         print(f"{fails=}")
@@ -57,7 +57,6 @@ class StartScreenWidget(QWidget):
             output_str += "- {}\n".format(self._format_fail(fail))
         self.steps_failed_label.setText(output_str)
 
-
     def start(self, first_run=False, is_success=False, fails=[]):
         if first_run:
             self.btn.setText("Start run")
@@ -66,10 +65,14 @@ class StartScreenWidget(QWidget):
             self._show_step_failed(fails)
             if is_success:
                 self.run_status_label.setText("Station passed")
-                self.run_status_label.setStyleSheet("QLabel {color: green;font-size: 32px}")
+                self.run_status_label.setStyleSheet(
+                    "QLabel {color: green;font-size: 32px}"
+                )
             else:
                 self.run_status_label.setText("Station failed")
-                self.run_status_label.setStyleSheet("QLabel {color: red;font-size: 32px}")
+                self.run_status_label.setStyleSheet(
+                    "QLabel {color: red;font-size: 32px}"
+                )
 
         self.btn.setEnabled(True)
 

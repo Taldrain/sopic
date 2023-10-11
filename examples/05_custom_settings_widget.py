@@ -8,6 +8,7 @@ from sopic.gui.settings_widgets import number_widget, bool_widget, combobox_widg
 
 from examples.steps import PrintSettings, GetSettings
 
+
 class SettingsStation(Station):
     STATION_NAME = "custom-settings-widget-station"
     STATION_ID = 1
@@ -29,19 +30,19 @@ class SettingsStation(Station):
         "int-settings": {
             "value": 42,
             "label": "A random int settings",
-            "widget": number_widget
+            "widget": number_widget,
         },
         "bool-settings": {
             "value": True,
             "label": "A random bool settings",
-            "widget": bool_widget
+            "widget": bool_widget,
         },
         "combobox-settings": {
             "value": "lorem",
             "values": ["lorem", "ipsum", "dolor", "sit", "amet"],
             "label": "A random combobox settings",
-            "widget": combobox_widget
-        }
+            "widget": combobox_widget,
+        },
     }
 
 

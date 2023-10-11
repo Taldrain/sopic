@@ -56,9 +56,9 @@ class MainWindow(QMainWindow):
         self._steps_viewer_widget = StepsViewerWidget(self._station.get_steps())
 
         self._start_screen_widget = start_screen_widget()
-        self._steps_viewer_widget.insert_tab(0,
-                                             self._start_screen_widget,
-                                             self._start_screen_widget.TAB_NAME)
+        self._steps_viewer_widget.insert_tab(
+            0, self._start_screen_widget, self._start_screen_widget.TAB_NAME
+        )
 
         if len(self._station._settings) != 0:
             self._settings_dialog_widget = SettingsDialogWidget(
@@ -113,17 +113,12 @@ class MainWindow(QMainWindow):
         self._steps_viewer_widget.setCurrentWidget(self._start_screen_widget)
         self._start_screen_widget.start(first_run, is_success, fails)
 
-
     def next_step_handlerUI(self, step):
         self._steps_viewer_widget.update_tab(step)
 
-    def end_run_handlerUI(self,
-                          nb_fail,
-                          nb_run,
-                          start_date,
-                          nb_consecutive_fails,
-                          is_success,
-                          fails):
+    def end_run_handlerUI(
+        self, nb_fail, nb_run, start_date, nb_consecutive_fails, is_success, fails
+    ):
         self._station_status_widget.update(
             nb_fail, nb_run, start_date, nb_consecutive_fails
         )
@@ -140,7 +135,7 @@ class MainWindow(QMainWindow):
 
         # Settings via Ctrl-P
         if (QApplication.keyboardModifiers() & Qt.ControlModifier) and (k == Qt.Key_P):
-            if (len(list(self._station.default_settings)) > 0):
+            if len(list(self._station.default_settings)) > 0:
                 self._settings_dialog_widget.show()
 
         # Debug layout via Ctrl-B

@@ -19,11 +19,14 @@ class UncatchedException(Station):
         # this step can either:
         # generate an uncatched error, which will go in the `"_err"` child
         # generate an error catched by the step, and which return "KO"
-        "error": (SimulateError, {
-            "ok": "no_error",
-            "ko": "catched",
-            "_err": "uncatched",
-        }),
+        "error": (
+            SimulateError,
+            {
+                "ok": "no_error",
+                "ko": "catched",
+                "_err": "uncatched",
+            },
+        ),
         "no_error": (AlwaysOK, []),
         "catched": (Catched, []),
         "uncatched": (Uncatched, []),

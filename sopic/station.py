@@ -189,7 +189,7 @@ class Station:
             "station_id": self.STATION_ID,
             "station_name": self.STATION_NAME,
             "fails": [],
-            "is_success" : True,
+            "is_success": True,
             "consecutive_failed": 0,
             "nb_failed": 0,
             "nb_run": 0,
@@ -311,11 +311,13 @@ class Station:
             self._run_info["is_success"] = False
             # We keep track of the step that failed, with optional additional
             # information
-            self._run_info["fails"].append({
-                "stepName": step.STEP_NAME,
-                "errorCode": step_result["errorCode"],
-                "infoStr": step_result["infoStr"],
-            })
+            self._run_info["fails"].append(
+                {
+                    "stepName": step.STEP_NAME,
+                    "errorCode": step_result["errorCode"],
+                    "infoStr": step_result["infoStr"],
+                }
+            )
             step.end()
             step_key = next_step_key
         return is_success_run

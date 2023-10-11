@@ -29,8 +29,8 @@ class SettingsDialogWidget(QDialog):
             # default to the string widget
             widget = string_widget
             # otherwhise use the `widget` key in the `default_settings` object
-            if ('widget' in self._settings[key]):
-                widget = self._settings[key]['widget']
+            if "widget" in self._settings[key]:
+                widget = self._settings[key]["widget"]
             label, input, reset = widget(key, self._settings[key], self.on_change)
             self._reset_widgets[key] = reset
             form_layout.addRow(label, input)
