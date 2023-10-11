@@ -1,7 +1,7 @@
 Sopic
 ======
 
-GUI library for test stations for your hardware on a production line.
+Test stations GUI library for your hardware on a production line.
 
 Define a station that will run a number of steps, in sequential order.
 Visualize the steps with the GUI
@@ -103,7 +103,7 @@ class MyStation(Station):
 # Define a step
 
 ```python
-from sopic.step import Step
+from sopic import Step
 
 class MyStep(Step):
     # Name of the step, used for display and logs
@@ -120,9 +120,7 @@ class MyStep(Step):
 
         # Add your tests here
 
-        # you can select specific child key as listed in the dag
-        return self.OK('ok')
-        # return self.OK('another-child-key')
+        return self.OK()
 ```
 
 

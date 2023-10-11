@@ -2,7 +2,7 @@ import threading
 
 from PySide6.QtWidgets import QPushButton, QHBoxLayout
 
-from sopic.step import Step
+from sopic import Step
 
 
 class Select(Step):
