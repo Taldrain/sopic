@@ -1,4 +1,5 @@
 from collections import deque
+from xdg_base_dirs import xdg_data_home
 import graphviz
 
 
@@ -70,4 +71,6 @@ def graph_to_dot(graph, start_step, station_name):
                 )
     dot.node(start_step, style="filled", fillcolor="green")
 
-    dot.render(f"dag-{station_name}", cleanup=True)
+    output_path = xdg_data_home().joinpath(f"sopic/dag-{station_name}")
+    print(f"Saving DAG render to: '{output_path}.png'")
+    dot.render(output_path, cleanup=True)
