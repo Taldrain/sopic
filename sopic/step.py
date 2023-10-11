@@ -1,18 +1,17 @@
-from .gui import StepUI
-
+from PySide6.QtWidgets import QWidget
 
 #
 # Step class
 #
-class Step:
+class Step(QWidget):
     STEP_NAME = ""
     # Useful for flaky tests
     MAX_RETRIES = 0
 
-    widget = None
     _childs = []
 
     def __init__(self, childs, logger):
+        super().__init__()
         if len(self.STEP_NAME) == 0:
             raise NameError("STEP_NAME should be defined")
 
@@ -39,7 +38,6 @@ class Step:
     # Called when the step starts
     def start(self):
         self.logger.debug("Starting step")
-        self.widget.clean()
 
     # Called when the step ends
     def end(self):
@@ -85,9 +83,3 @@ class Step:
             info_str=info_str,
             error_code=error_code,
         )
-
-    def getWidget(self):
-        if self.widget is None:
-            self.widget = StepUI()
-
-        return self.widget

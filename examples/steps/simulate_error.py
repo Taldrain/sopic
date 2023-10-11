@@ -1,61 +1,20 @@
 import threading
 
 from PySide6.QtWidgets import QPushButton, QHBoxLayout
-from PySide6.QtCore import Slot
 
 from sopic.step import Step
-from sopic.gui import StepUI
-
-SELECTION = ""
-
 
 class KOException(Exception):
     pass
 
-
-class SimulateErrorUI(StepUI):
-    def __init__(self, event):
-        super().__init__()
-        self._event = event
-
-        buttonOK = QPushButton("OK")
-        buttonOK.clicked.connect(self.handleClickOK)
-
-        buttonKO = QPushButton("KO - Cath error")
-        buttonKO.clicked.connect(self.handleClickKO)
-
-        buttonThrow = QPushButton("KO - Not catched error")
-        buttonThrow.clicked.connect(self.handleClickThrow)
-
-        htoplayout = QHBoxLayout()
-        htoplayout.addWidget(buttonOK)
-        htoplayout.addWidget(buttonKO)
-        htoplayout.addWidget(buttonThrow)
-
-        self.setLayout(htoplayout)
-
-    @Slot()
-    def handleClickOK(self):
-        global SELECTION
-        SELECTION = "ok"
-        self._event.set()
-
-    @Slot()
-    def handleClickKO(self):
-        global SELECTION
-        SELECTION = "ko"
-        self._event.set()
-
-    @Slot()
-    def handleClickThrow(self):
-        global SELECTION
-        SELECTION = "throw"
-        self._event.set()
-
-
 class SimulateError(Step):
     STEP_NAME = "simulate-error"
     _event = threading.Event()
+    _selection = ""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._init_ui()
 
     def start(self, *kwargs):
         super().start()
@@ -63,21 +22,44 @@ class SimulateError(Step):
         self._event.wait()
         self._event.clear()
 
-        global SELECTION
         try:
-            if SELECTION == "ok":
-                return self.OK()
+            if self._selection == "ok":
+                return self.OK(self.get_step_key("ok"))
 
-            if SELECTION == "ko":
+            if self._selection == "ko":
                 raise KOException
 
-            if SELECTION == "throw":
+            if self._selection == "throw":
+                # uncatched exception
                 raise Exception
         except KOException:
             return self.KO(self.get_step_key("ko"))
 
-    def getWidget(self):
-        if self.widget is None:
-            self.widget = SimulateErrorUI(self._event)
+    def _init_ui(self):
+        button_ok = QPushButton("OK")
+        button_ok.clicked.connect(self.handle_click_ok)
 
-        return self.widget
+        button_ko = QPushButton("KO - Cath error")
+        button_ko.clicked.connect(self.handle_click_ko)
+
+        button_throw = QPushButton("KO - Not catched error")
+        button_throw.clicked.connect(self.handle_click_throw)
+
+        htoplayout = QHBoxLayout()
+        htoplayout.addWidget(button_ok)
+        htoplayout.addWidget(button_ko)
+        htoplayout.addWidget(button_throw)
+
+        self.setLayout(htoplayout)
+
+    def handle_click_ok(self):
+        self._selection = "ok"
+        self._event.set()
+
+    def handle_click_ko(self):
+        self._selection = "ko"
+        self._event.set()
+
+    def handle_click_throw(self):
+        self._selection = "throw"
+        self._event.set()

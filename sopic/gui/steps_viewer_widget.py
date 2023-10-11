@@ -8,7 +8,7 @@ class StepsViewerWidget(QTabWidget):
         self.tabBar().setVisible(True)
 
         for index, step in enumerate(steps):
-            self.addTab(step.getWidget(), step.STEP_NAME)
+            self.addTab(step, step.STEP_NAME)
             self.tabBar().setTabEnabled(index, False)
 
     def insert_tab(self, index, widget, tab_name):
@@ -16,4 +16,4 @@ class StepsViewerWidget(QTabWidget):
         self.tabBar().setTabEnabled(index, False)
 
     def update_tab(self, step):
-        self.setCurrentWidget(step.getWidget())
+        self.setCurrentWidget(step)
