@@ -14,11 +14,11 @@ export default function Index() {
                       <span className="block">Sopic</span>
                     </h1>
                     <p className="text-base text-gray-300 sm:text-xl lg:text-lg xl:text-xl mt-5">
-                      Framework for test stations on a production line
+                      Test stations GUI library for your hardware on a production line
                     </p>
                     <div className="mt-5">
-                      <pre className="bg-black rounded text-slate-50 p-2 text-xl">
-                        <span className="select-none">$ </span>pip install sopic
+                      <pre className="bg-black rounded text-slate-50 p-2 text-xl w-1/2">
+                        <span className="select-none text-gray-400">$ </span>pip install sopic
                       </pre>
                     </div>
                     <div className="mt-5">
@@ -46,8 +46,8 @@ export default function Index() {
                 <li>GUI</li>
                 <li>Share data between steps</li>
                 <li>Settings for step configuration</li>
-                <li>Step selection</li>
                 <li>Logs</li>
+                <li>Easy to customize with wrappers</li>
               </ul>
             </div>
           </div>
@@ -91,5 +91,3 @@ export default function Index() {
     </div>
   );
 }
-
-// - 
