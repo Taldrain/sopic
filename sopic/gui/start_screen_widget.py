@@ -47,7 +47,6 @@ class StartScreenWidget(QWidget):
         return res
 
     def _show_step_failed(self, fails):
-        print(f"{fails=}")
         if len(fails) <= 0:
             self.steps_failed_label.setText("")
             return
