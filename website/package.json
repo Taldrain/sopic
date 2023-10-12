@@ -1,13 +1,13 @@
 {
   "name": "sopic-website",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "remix build",
-    "deploy": "fly deploy --remote-only",
     "dev": "remix dev",
+    "build": "remix build",
     "start": "remix-serve ./build/index.js",
+    "deploy": "fly deploy --remote-only",
     "typecheck": "tsc"
   },
   "dependencies": {
@@ -28,6 +28,6 @@
     "typescript": "5.2.2"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=18"
   }
 }
