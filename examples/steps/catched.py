@@ -1,8 +1,8 @@
-from sopic import Step
+from sopic.step import Step
 
 
-class AlwaysOK(Step):
-    STEP_NAME = "Always OK"
+class Catched(Step):
+    STEP_NAME = "catched-step"
 
     def start(self, *kwargs):
         super().start()

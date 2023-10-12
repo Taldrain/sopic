@@ -23,6 +23,9 @@ runs:
       with:
         path: .venv
         key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+    - name: Install PySide dependencies
+      run: sudo apt install libegl1
+      shell: bash
     - name: Install dependencies
       if: inputs.disable_cache == 'true' || steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install

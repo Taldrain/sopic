@@ -1,7 +1,7 @@
 # Changelog
 
-## Unversioned
+## 1.0.0
 
-- Minor: switch to poetry
-
-## 0.1.0
+- New DAG logic to cycle through steps
+- New API for steps and station wrappers
+- New settings window

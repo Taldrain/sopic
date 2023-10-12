@@ -1,9 +1,5 @@
 import datetime
-from PyQt5.QtWidgets import (
-    QWidget,
-    QHBoxLayout,
-    QLabel,
-)
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel
 
 
 def formatDisplayStat(x, y):
@@ -11,40 +7,64 @@ def formatDisplayStat(x, y):
 
 
 class StationStatusWidget(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    _avg_time = 0
 
-        self.avgTime = 0
-        self.initWidgets()
-        hlayout = QHBoxLayout()
-        hlayout.addWidget(self.nbPassed)
-        hlayout.addWidget(self.nbFailed)
-        hlayout.addWidget(self.consecutiveFailed)
-        hlayout.addWidget(self.stepTimer)
-        hlayout.addWidget(self.stationTime)
+    _nb_pass_label = None
+    _nb_fail_label = None
+    _nb_consecutive_fail_label = None
+    _run_timer_label = None
+    _station_time_label = None
 
-        self.setLayout(hlayout)
+    def __init__(self):
+        super().__init__()
 
-    def initWidgets(self):
-        self.nbPassed = QLabel("Number of passed: " + formatDisplayStat(0, 0))
-        self.nbFailed = QLabel("Number of failed: " + formatDisplayStat(0, 0))
-        self.consecutiveFailed = QLabel("Consecutive fails: 0")
-        self.stepTimer = QLabel("Previous run: {}s (avg: {}s)".format(0, 0))
-        self.stationTime = QLabel("Date: {}".format(datetime.date.today().isoformat()))
+        self._init_widgets()
 
-    def update(self, runObj):
-        runFail = runObj["nb_failed"]
-        nbRun = runObj["nb_run"]
-        runPass = nbRun - runFail
-        timeSpent = (datetime.datetime.utcnow() - runObj["startDate"]).seconds
-        if nbRun > 0:
-            self.avgTime = (self.avgTime * (nbRun - 1) / nbRun) + timeSpent / nbRun
+        layout = QHBoxLayout()
 
-        self.nbPassed.setText("Number of passed: " + formatDisplayStat(runPass, nbRun))
-        self.nbFailed.setText("Number of failed: " + formatDisplayStat(runFail, nbRun))
-        self.consecutiveFailed.setText(
-            "Consecutive fails: " + str(runObj["consecutive_failed"])
+        layout.addWidget(self._nb_pass_label)
+        layout.addWidget(self._nb_fail_label)
+        layout.addWidget(self._nb_consecutive_fail_label)
+        layout.addWidget(self._run_timer_label)
+        layout.addWidget(self._station_time_label)
+
+        self.setLayout(layout)
+
+    def _init_widgets(self):
+        self._nb_pass_label = QLabel()
+        self._nb_fail_label = QLabel()
+        self._nb_consecutive_fail_label = QLabel()
+        self._run_timer_label = QLabel()
+        self._station_time_label = QLabel(
+            "Date: {}".format(datetime.date.today().isoformat())
         )
-        self.stepTimer.setText(
-            "Previous run: {}s (avg: {:.1f}s)".format(timeSpent, self.avgTime)
+
+        self._update_labels(0, 0, 0, 0, 0)
+
+    def _update_labels(
+        self, nb_pass, nb_fail, nb_run, nb_consecutive_fails, time_spent
+    ):
+        self._nb_pass_label.setText(
+            "Number of successes: " + formatDisplayStat(nb_pass, nb_run)
         )
+        self._nb_fail_label.setText(
+            "Number of fails: " + formatDisplayStat(nb_fail, nb_run)
+        )
+        self._nb_consecutive_fail_label.setText(
+            "Consecutive fails: " + str(nb_consecutive_fails)
+        )
+        self._run_timer_label.setText(
+            "Previous run: {}s (avg: {:.1f}s)".format(time_spent, self._avg_time)
+        )
+
+    def update(self, nb_fail, nb_run, start_date, nb_consecutive_fails):
+        nb_pass = nb_run - nb_fail
+        run_duration = (datetime.datetime.utcnow() - start_date).seconds
+        time_spent = (datetime.datetime.utcnow() - start_date).seconds
+
+        if nb_run > 0:
+            self._avg_time = (
+                self._avg_time * (nb_run - 1) / nb_run
+            ) + run_duration / nb_run
+
+        self._update_labels(nb_pass, nb_fail, nb_run, nb_consecutive_fails, time_spent)

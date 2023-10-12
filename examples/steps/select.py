@@ -1,64 +1,46 @@
 import threading
-from PyQt5.QtWidgets import QPushButton, QHBoxLayout
-from PyQt5.QtCore import pyqtSlot
 
-from sopic.step import Step
-from sopic.gui import StepUI
+from PySide6.QtWidgets import QPushButton, QHBoxLayout
 
-# Dirty
-# sharing data between the StepUI and the Step
-# which button was clicked
-IS_OK = True
-
-
-class SelectUI(StepUI):
-    def __init__(self, parent=None, event=None):
-        super().__init__(parent)
-        self.event = event
-
-        buttonOK = QPushButton("OK")
-        buttonOK.clicked.connect(self.handleClickOK)
-
-        buttonKO = QPushButton("KO")
-        buttonKO.clicked.connect(self.handleClickKO)
-
-        htoplayout = QHBoxLayout()
-        htoplayout.addWidget(buttonOK)
-        htoplayout.addWidget(buttonKO)
-
-        self.setLayout(htoplayout)
-
-    @pyqtSlot()
-    def handleClickOK(self):
-        global IS_OK
-        IS_OK = True
-        self.event.set()
-
-    @pyqtSlot()
-    def handleClickKO(self):
-        global IS_OK
-        IS_OK = False
-        self.event.set()
+from sopic import Step
 
 
 class Select(Step):
     STEP_NAME = "button-select"
-    event = threading.Event()
+    _event = threading.Event()
+    _selected_ok = False
 
-    def start(self, _stepsData):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._init_ui()
+
+    def start(self, *kwargs):
         super().start()
 
-        self.event.wait()
-        self.event.clear()
+        self._event.wait()
+        self._event.clear()
 
-        global IS_OK
-        if IS_OK:
-            return self.OK()
+        if self._selected_ok:
+            return self.OK(self.get_step_key("ok"))
 
-        return self.KO()
+        return self.KO(self.get_step_key("ko"), "KO button clicked")
 
-    def getWidget(self):
-        if self.widget is None:
-            self.widget = SelectUI(event=self.event)
+    def _init_ui(self):
+        button_ok = QPushButton("OK")
+        button_ok.clicked.connect(self._handle_click_ok)
 
-        return self.widget
+        button_ko = QPushButton("KO")
+        button_ko.clicked.connect(self._handle_click_ko)
+
+        htoplayout = QHBoxLayout()
+        htoplayout.addWidget(button_ok)
+        htoplayout.addWidget(button_ko)
+        self.setLayout(htoplayout)
+
+    def _handle_click_ok(self):
+        self._selected_ok = True
+        self._event.set()
+
+    def _handle_click_ko(self):
+        self._selected_ok = False
+        self._event.set()
