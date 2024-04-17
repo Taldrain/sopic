@@ -7,6 +7,7 @@ from PySide6.QtGui import QPalette, QColor, QFont, QKeyEvent
 
 from sopic.utils.logger import widget_formatter
 
+
 # prevents method clashing issue
 class LogSignal(QObject):
     signal = Signal(str, int)
